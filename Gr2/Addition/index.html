@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Addition Game</title>
+
+<style>
+body{font-family:sans-serif;margin:0;background:linear-gradient(#6dd5fa,#ffffff);display:flex;justify-content:center;align-items:center;height:100vh}
+#game{width:95%;max-width:500px;text-align:center}
+.card{background:white;padding:20px;border-radius:20px;box-shadow:0 10px 20px rgba(0,0,0,0.2)}
+button,input{padding:15px;font-size:18px;border-radius:12px;border:none;margin-top:10px;width:100%}
+button{background:#ff7b00;color:white;font-weight:bold}
+.correct{color:green;font-weight:bold}
+.wrong{color:red;font-weight:bold}
+
+#logoSplash{position:fixed;inset:0;background:white;display:flex;justify-content:center;align-items:center;z-index:9999;animation:fadeOut 0.5s ease forwards;animation-delay:2s}
+#logoSplash img{width:200px}
+@keyframes fadeOut{to{opacity:0;visibility:hidden}}
+</style>
+</head>
+
+<body>
+
+<div id="logoSplash"><img src="../assets/birla-logo.png"></div>
+
+<div id="game" class="card">
+<h2 id="question">Loading...</h2>
+<input id="answer" type="number" placeholder="Type your answer">
+<button onclick="submitAnswer()">Submit</button>
+<p id="feedback"></p>
+</div>
+
+<script>
+let questions=[
+{q:"32 + 15",a:47},
+{q:"45 + 23",a:68},
+{q:"67 + 12",a:79},
+{q:"89 + 10",a:99},
+{q:"54 + 21",a:75},
+{q:"76 + 13",a:89},
+{q:"34 + 45",a:79},
+{q:"23 + 56",a:79},
+{q:"91 + 8",a:99},
+{q:"12 + 34",a:46}
+];
+
+questions.sort(()=>Math.random()-0.5);
+let current=0,score=0;
+
+function loadQuestion(){
+document.getElementById("question").innerText=questions[current].q+" = ?";
+document.getElementById("answer").value="";
+document.getElementById("feedback").innerText="";
+}
+
+function submitAnswer(){
+let user=parseInt(document.getElementById("answer").value);
+let correct=questions[current].a;
+
+if(user===correct){
+score++;
+document.getElementById("feedback").innerHTML="✅ Correct!";
+document.getElementById("feedback").className="correct";
+setTimeout(nextQuestion,1500);
+}else{
+document.getElementById("feedback").innerHTML="❌ Try again!";
+document.getElementById("feedback").className="wrong";
+}
+}
+
+function nextQuestion(){
+current++;
+if(current<questions.length){loadQuestion();}
+else{endGame();}
+}
+
+function endGame(){
+document.getElementById("game").innerHTML=`<h2>Score: ${score}/10</h2>
+<button onclick="location.reload()">Play Again</button>`;
+}
+
+loadQuestion();
+
+setTimeout(()=>{let s=document.getElementById("logoSplash");if(s)s.remove()},2500);
+</script>
+
+</body>
+</html>
