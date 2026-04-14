@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Addition - Grade 2</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f4f7fb;
+    text-align: center;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+    padding: 20px;
+}
+
+.hidden { display: none; }
+
+button {
+    padding: 12px;
+    margin: 8px;
+    width: 90%;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    background: #4CAF50;
+    color: white;
+}
+
+button:hover { background: #45a049; }
+
+.option { background: #2196F3; }
+.option:hover { background: #1e88e5; }
+
+.correct { background: #4CAF50 !important; }
+.wrong { background: #e53935 !important; }
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#logoScreen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#logoScreen img {
+    width: 200px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- Logo Screen -->
+<div id="logoScreen">
+    <img src="../assets/innovine-logo.png">
+</div>
+
+<!-- Intro Screen -->
+<div id="intro" class="container hidden">
+    <h2>Addition</h2>
+    <p>Grade 2 - Math</p>
+    <p>Answer 12 questions. You have 60 seconds!</p>
+    <button onclick="startQuiz()">Start</button>
+</div>
+
+<!-- Quiz Screen -->
+<div id="quiz" class="container hidden">
+    <div class="top-bar">
+        <span id="score">Score: 0</span>
+        <span id="timer">Time: 60</span>
+    </div>
+    <h3 id="question"></h3>
+    <div id="options"></div>
+</div>
+
+<!-- Result Screen -->
+<div id="result" class="container hidden">
+    <h2>Great Try!</h2>
+    <p id="finalScore"></p>
+    <button onclick="restartQuiz()">Retry</button>
+</div>
+
+<audio id="correctSound" src="../assets/correct.mp3"></audio>
+<audio id="wrongSound" src="../assets/wrong.mp3"></audio>
+
+<script>
+const questions = [
+{
+q: "Riya has 125 stickers. She gets 23 more. How many now?",
+options: ["138","148","158","150"],
+answer: "148",
+explanation: "125 + 23 = 148"
+},
+{
+q: "A teacher has 132 books and buys 18 more. Total?",
+options: ["140","150","160","148"],
+answer: "150",
+explanation: "132 + 18 = 150"
+},
+{
+q: "210 notebooks in morning and 45 in afternoon. Total?",
+options: ["245","255","265","235"],
+answer: "255",
+explanation: "210 + 45 = 255"
+},
+{
+q: "Pens = 120, Pencils = 80. Total items?",
+options: ["180","190","200","210"],
+answer: "200",
+explanation: "120 + 80 = 200"
+},
+{
+q: "Class A = 145, Class B = 155. Total books?",
+options: ["280","290","300","310"],
+answer: "300",
+explanation: "145 + 155 = 300"
+},
+{
+q: "120 + 25 = 135. Is it correct?",
+options: ["Yes","No, 145","No, 155","No, 130"],
+answer: "No, 145",
+explanation: "120 + 25 = 145"
+},
+{
+q: "145 + 32 = 167. What is wrong?",
+options: ["Tens wrong","Ones wrong","Carry missing","Nothing wrong"],
+answer: "Carry missing",
+explanation: "5 + 2 = 7, 4 + 3 = 7 → carry missing → 177"
+},
+{
+q: "230 + 40 = 240. Mistake?",
+options: ["Tens wrong","Ones wrong","Hundreds twice","No mistake"],
+answer: "Tens wrong",
+explanation: "230 + 40 = 270"
+},
+{
+q: "40 + 30 = 70. Reason: we add tens first.",
+options: ["Both correct & explain","Both correct not explain","Assertion correct","Both wrong"],
+answer: "Both correct & explain",
+explanation: "Tens addition gives 70"
+},
+{
+q: "125 + 25 = 150. Reason: adding 25 increases number.",
+options: ["Both correct & explain","Both correct not explain","Assertion correct","Both wrong"],
+answer: "Both correct & explain",
+explanation: "Adding increases value"
+},
+{
+q: "Day1 = 145, Day2 = 155. Total?",
+options: ["280","290","300","310"],
+answer: "300",
+explanation: "145 + 155 = 300"
+},
+{
+q: "135 + 145 + 120 = ?",
+options: ["380","390","400","410"],
+answer: "400",
+explanation: "135 + 145 = 280, +120 = 400"
+}
+];
+
+let current = 0;
+let score = 0;
+let timer = 60;
+let interval;
+let retry = true;
+
+setTimeout(() => {
+    document.getElementById("logoScreen").classList.add("hidden");
+    document.getElementById("intro").classList.remove("hidden");
+}, 3000);
+
+function startQuiz(){
+    document.getElementById("intro").classList.add("hidden");
+    document.getElementById("quiz").classList.remove("hidden");
+    showQuestion();
+    startTimer();
+}
+
+function startTimer(){
+    interval = setInterval(()=>{
+        timer--;
+        document.getElementById("timer").innerText = "Time: " + timer;
+        if(timer <= 0){
+            endQuiz();
+        }
+    },1000);
+}
+
+function showQuestion(){
+    retry = true;
+    let q = questions[current];
+    document.getElementById("question").innerText = q.q;
+    let optionsHTML = "";
+    q.options.forEach(opt=>{
+        optionsHTML += <button class="option" onclick="checkAnswer('${opt}', this)">${opt}</button>;
+    });
+    document.getElementById("options").innerHTML = optionsHTML;
+}
+
+function checkAnswer(selected, btn){
+    let q = questions[current];
+
+    if(selected === q.answer){
+        document.getElementById("correctSound").play();
+        btn.classList.add("correct");
+        score++;
+        updateScore();
+        setTimeout(nextQuestion, 800);
+    } else {
+        document.getElementById("wrongSound").play();
+        btn.classList.add("wrong");
+
+        if(retry){
+            retry = false;
+        } else {
+            alert("Correct Answer: " + q.answer + "\n" + q.explanation);
+            nextQuestion();
+        }
+    }
+}
+
+function updateScore(){
+    document.getElementById("score").innerText = "Score: " + score;
+}
+
+function nextQuestion(){
+    current++;
+    if(current < questions.length){
+        showQuestion();
+    } else {
+        endQuiz();
+    }
+}
+
+function endQuiz(){
+    clearInterval(interval);
+    document.getElementById("quiz").classList.add("hidden");
+    document.getElementById("result").classList.remove("hidden");
+    document.getElementById("finalScore").innerText = 
+        "Your Score: " + score + " / " + questions.length;
+}
+
+function restartQuiz(){
+    location.reload();
+}
+</script>
+
+</body>
+</html>
