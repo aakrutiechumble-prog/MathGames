@@ -1,248 +1,287 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Addition – Grade 3 Mathematics | Innovine</title>
-    <style>
-        :root {
-            --primary: #1e293b;
-            --accent: #e04e39;
-            --success: #22c55e;
-            --error: #ef4444;
-            --bg: #f8fafc;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Addition Quiz</title>
 
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #dbeafe, #fef3c7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
 
-        #app-container {
-            width: 90%;
-            max-width: 600px;
-            background: white;
-            padding: 2.5rem;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            text-align: center;
-        }
+.container {
+  width: 95%;
+  max-width: 500px;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  text-align: center;
+}
 
-        /* The Splash Screen Branding */
-        #logo-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
+h1 {
+  font-size: 22px;
+}
 
-        #logo-overlay img {
-            max-width: 280px;
-            height: auto;
-            margin-bottom: 20px;
-        }
+button {
+  padding: 10px 15px;
+  margin: 8px;
+  border: none;
+  border-radius: 8px;
+  background-color: #2563eb;
+  color: white;
+  cursor: pointer;
+}
 
-        .loader {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
+button:hover {
+  background-color: #1e40af;
+}
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.option {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
 
-        .hidden { display: none !important; }
+.option:hover {
+  background-color: #e0f2fe;
+}
 
-        /* Quiz UI */
-        .option-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            background: white;
-            cursor: pointer;
-            text-align: left;
-            font-size: 1rem;
-        }
+.hidden {
+  display: none;
+}
 
-        .correct { background: var(--success) !important; color: white; border-color: var(--success); }
-        .wrong { background: var(--error) !important; color: white; border-color: var(--error); }
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
 
-        .explanation {
-            background: #fff9db;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            text-align: left;
-            border-left: 5px solid #fab005;
-        }
+.logo-screen {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-        .main-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        #timer {
-            font-weight: bold;
-            color: var(--error);
-            border: 2px solid var(--error);
-            padding: 5px 15px;
-            border-radius: 20px;
-        }
-    </style>
+.logo-screen img {
+  width: 150px;
+}
+</style>
 </head>
+
 <body>
 
-    <div id="logo-overlay">
-        <img src="assets/innovine-logo.png" alt="Innovine Logo" onerror="this.src='https://via.placeholder.com/250x100?text=Innovine+Logo+Not+Found'">
-        <div class="loader"></div>
-        <p style="color: #64748b; margin-top: 15px;">Loading Activity...</p>
+<!-- Logo Screen -->
+<div id="logoScreen" class="logo-screen">
+  <img src="assets/innovine-logo.png">
+</div>
+
+<div class="container hidden" id="app">
+
+  <!-- Intro -->
+  <div id="intro">
+    <h1>Addition Challenge</h1>
+    <p>Test your addition skills!</p>
+    <button onclick="startQuiz()">Start</button>
+  </div>
+
+  <!-- Quiz -->
+  <div id="quiz" class="hidden">
+    <div class="top-bar">
+      <span id="score">Score: 0</span>
+      <span id="timer">Time: 60</span>
     </div>
+    <h2 id="question"></h2>
+    <div id="options"></div>
+  </div>
 
-    <div id="app-container" class="hidden">
-        <div id="intro-screen">
-            <h1 style="color: var(--primary)">Addition Challenge</h1>
-            <p>Grade 3 Mathematics | Innovine Solutions</p>
-            <button class="main-btn" onclick="startQuiz()">Start Now</button>
-        </div>
+  <!-- Result -->
+  <div id="result" class="hidden">
+    <h2>Quiz Complete!</h2>
+    <p id="finalScore"></p>
+    <button onclick="restartQuiz()">Play Again</button>
+  </div>
 
-        <div id="quiz-screen" class="hidden">
-            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div style="font-weight: bold;">Score: <span id="current-score">0</span></div>
-                <div id="timer">60s</div>
-            </div>
-            <h3 id="question-text" style="text-align: left;"></h3>
-            <div id="options-container"></div>
-            <div id="feedback" class="explanation hidden"></div>
-            <button id="next-btn" class="main-btn hidden" onclick="nextQuestion()" style="margin-top: 20px;">Next</button>
-        </div>
+</div>
 
-        <div id="result-screen" class="hidden">
-            <h2>Activity Finished!</h2>
-            <h1 id="final-score" style="font-size: 4rem; color: var(--accent);">0</h1>
-            <p id="result-message"></p>
-            <button class="main-btn" onclick="location.reload()">Try Again</button>
-        </div>
-    </div>
+<script>
 
-    <script>
-        const questions = [
-            { q: "Riya has 125 stickers. She wants 150 stickers. She gets 23 more. Does she reach her goal?", a: ["Yes, she has more than 150", "Yes, she has exactly 150", "No, she has less than 150", "Cannot be found"], c: 2, e: "125 + 23 = 148. She is still 2 stickers short of 150!" },
-            { q: "A teacher has 132 books. She buys some more and now has 150 books. How many books did she buy?", a: ["12", "18", "20", "28"], c: 1, e: "150 - 132 = 18 books." },
-            { q: "A shop sold 210 notebooks in the morning. By afternoon, total sales became 255. How many were sold in the afternoon?", a: ["35", "40", "45", "50"], c: 2, e: "255 - 210 = 45 notebooks sold." },
-            { q: "A shop sold 120 pens and 80 pencils. How many more pens than pencils were sold?", a: ["20", "30", "40", "50"], c: 2, e: "120 - 80 = 40. There are 40 more pens." },
-            { q: "Class A collected 145 books and Class B collected 155 books. Which statement is correct?", a: ["Class A collected more books", "Class B collected 10 more books", "Both collected equal books", "Class B collected 20 more books"], c: 1, e: "155 is 10 more than 145." },
-            { q: "Aarav solved: 120 + 25 = 135. What mistake did he make?", a: ["Added ones incorrectly", "Added tens incorrectly", "Ignored tens completely", "No mistake"], c: 1, e: "120 + 25 = 145. He added the tens place incorrectly." },
-            { q: "Meera solved: 145 + 32 = 167. Which is correct?", a: ["Ones are added wrongly", "Tens are added wrongly", "Carry is missing", "Answer is correct"], c: 1, e: "145 + 32 = 177. She wrote 6 instead of 7 in the tens place." },
-            { q: "Rohan solved: 230 + 40 = 240. Why is this wrong?", a: ["Tens were not added correctly", "Ones were added wrongly", "Hundreds were added twice", "No mistake"], c: 0, e: "230 + 40 = 270. He only added 10 instead of 40." },
-            { q: "Assertion: 40 + 30 = 70. Reason: We add tens to tens.", a: ["Both are correct and reason explains assertion", "Both are correct but reason does not explain", "Assertion is correct, reason is wrong", "Both are wrong"], c: 0, e: "Adding numbers requires adding digits of the same place value." },
-            { q: "Assertion: 125 + 25 = 150. Reason: Adding 25 increases the number by 25", a: ["Both are correct and reason explains assertion", "Both are correct but reason does not explain", "Assertion is correct, reason is wrong", "Both are wrong"], c: 0, e: "Addition is the process of increasing a quantity by a specific amount." },
-            { q: "A school needs 300 books. They got 145 on Day 1 and 155 on Day 2. They donate 20 books. Do they have enough?", a: ["Yes, exactly enough", "Yes, more than enough", "No, less than needed", "Cannot be found"], c: 2, e: "145+155=300, but after donating 20, they only have 280 left." },
-            { q: "Riya (135), Ameya (145), and Library (120) combined their books. How many groups of 100 can they make?", a: ["3", "4", "5", "6"], c: 1, e: "Total is 400, which makes exactly 4 groups of 100." }
-        ];
+const questions = [
+{
+q: "Riya has 125 stickers. She wants 150 stickers. She gets 23 more. Does she reach her goal?",
+options: ["Yes, she has more than 150","Yes, she has exactly 150","No, she has less than 150","Cannot be found"],
+answer: 2,
+explanation: "125 + 23 = 148, which is less than 150."
+},
+{
+q: "A teacher has 132 books. She buys some more and now has 150 books. How many books did she buy?",
+options: ["12","18","20","28"],
+answer: 1,
+explanation: "150 - 132 = 18"
+},
+{
+q: "A shop sold 210 notebooks in the morning. By afternoon, total sales became 255. How many notebooks were sold in the afternoon?",
+options: ["35","40","45","50"],
+answer: 2,
+explanation: "255 - 210 = 45"
+},
+{
+q: "A shop sold 120 pens and 80 pencils. How many more pens than pencils were sold?",
+options: ["20","30","40","50"],
+answer: 2,
+explanation: "120 - 80 = 40"
+},
+{
+q: "Class A collected 145 books and Class B collected 155 books. Which statement is correct?",
+options: ["Class A collected more books","Class B collected 10 more books","Both collected equal books","Class B collected 20 more books"],
+answer: 1,
+explanation: "155 - 145 = 10"
+},
+{
+q: "Aarav solved: 120 + 25 = 135. What mistake did he make?",
+options: ["Added ones incorrectly","Added tens incorrectly","Ignored tens completely","No mistake"],
+answer: 1,
+explanation: "Correct answer is 145. Tens were added wrongly."
+},
+{
+q: "Meera solved: 145 + 32 = 167. Which is correct?",
+options: ["Ones are added wrongly","Tens are added wrongly","Carry is missing","Answer is correct"],
+answer: 3,
+explanation: "145 + 32 = 177, not 167."
+},
+{
+q: "Rohan solved: 230 + 40 = 240. Why is this wrong?",
+options: ["Tens were not added correctly","Ones were added wrongly","Hundreds were added twice","No mistake"],
+answer: 0,
+explanation: "230 + 40 = 270"
+},
+{
+q: "Assertion: 40 + 30 = 70. Reason: We add tens to tens.",
+options: ["Both are correct and reason explains assertion","Both are correct but reason does not explain","Assertion is correct, reason is wrong","Both are wrong"],
+answer: 0,
+explanation: "Both are correct and connected."
+},
+{
+q: "Assertion: 125 + 25 = 150. Reason: Adding 25 increases the number by 25",
+options: ["Both are correct and reason explains assertion","Both are correct but reason does not explain","Assertion is correct, reason is wrong","Both are wrong"],
+answer: 0,
+explanation: "Adding 25 gives 150."
+},
+{
+q: "A school needs 300 books. They collected 145 and 155. They donate 20. Will they still have enough?",
+options: ["Yes, exactly enough","Yes, more than enough","No, less than needed","Cannot be found"],
+answer: 2,
+explanation: "145 + 155 = 300, minus 20 = 280"
+},
+{
+q: "Riya collected 135 books and Ameya 145. There were already 120 books. How many full groups of 100?",
+options: ["3","4","5","6"],
+answer: 1,
+explanation: "135 + 145 + 120 = 400 → 4 groups"
+}
+];
 
-        let currentQ = 0, score = 0, attempts = 0, timeLeft = 60, timerInterval;
+let current = 0;
+let score = 0;
+let timer;
+let timeLeft = 60;
+let attempts = 0;
 
-        window.onload = () => {
-            setTimeout(() => {
-                document.getElementById('logo-overlay').classList.add('hidden');
-                document.getElementById('app-container').classList.remove('hidden');
-            }, 5000);
-        };
+setTimeout(() => {
+  document.getElementById("logoScreen").style.display = "none";
+  document.getElementById("app").classList.remove("hidden");
+}, 5000);
 
-        function startQuiz() {
-            document.getElementById('intro-screen').classList.add('hidden');
-            document.getElementById('quiz-screen').classList.remove('hidden');
-            loadQuestion();
-        }
+function startQuiz() {
+  document.getElementById("intro").classList.add("hidden");
+  document.getElementById("quiz").classList.remove("hidden");
+  loadQuestion();
+}
 
-        function loadQuestion() {
-            attempts = 0; timeLeft = 60;
-            document.getElementById('feedback').classList.add('hidden');
-            document.getElementById('next-btn').classList.add('hidden');
-            const qData = questions[currentQ];
-            document.getElementById('question-text').innerText = (currentQ+1) + ". " + qData.q;
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
-            qData.a.forEach((opt, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.innerText = opt;
-                btn.onclick = () => checkAnswer(index, btn);
-                container.appendChild(btn);
-            });
-            startTimer();
-        }
+function loadQuestion() {
+  clearInterval(timer);
+  timeLeft = 60;
+  attempts = 0;
 
-        function startTimer() {
-            clearInterval(timerInterval);
-            document.getElementById('timer').innerText = timeLeft + "s";
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timer').innerText = timeLeft + "s";
-                if (timeLeft <= 0) { clearInterval(timerInterval); revealCorrect(); }
-            }, 1000);
-        }
+  document.getElementById("timer").innerText = "Time: " + timeLeft;
 
-        function checkAnswer(index, btn) {
-            if (index === questions[currentQ].c) {
-                btn.classList.add('correct');
-                if (attempts === 0) score++;
-                document.getElementById('current-score').innerText = score;
-                finishQ();
-            } else {
-                attempts++;
-                btn.classList.add('wrong');
-                btn.disabled = true;
-                if (attempts >= 2) revealCorrect();
-            }
-        }
+  timer = setInterval(() => {
+    timeLeft--;
+    document.getElementById("timer").innerText = "Time: " + timeLeft;
+    if (timeLeft <= 0) nextQuestion();
+  }, 1000);
 
-        function revealCorrect() {
-            const btns = document.querySelectorAll('.option-btn');
-            btns[questions[currentQ].c].classList.add('correct');
-            document.getElementById('feedback').classList.remove('hidden');
-            document.getElementById('feedback').innerText = "Explanation: " + questions[currentQ].e;
-            finishQ();
-        }
+  let q = questions[current];
+  document.getElementById("question").innerText = q.q;
 
-        function finishQ() {
-            clearInterval(timerInterval);
-            document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
-            document.getElementById('next-btn').classList.remove('hidden');
-        }
+  let optionsHTML = "";
+  q.options.forEach((opt, index) => {
+    optionsHTML += <div class="option" onclick="checkAnswer(${index})">${opt}</div>;
+  });
 
-        function nextQuestion() {
-            currentQ++;
-            if (currentQ < questions.length) loadQuestion();
-            else showResults();
-        }
+  document.getElementById("options").innerHTML = optionsHTML;
+}
 
-        function showResults() {
-            document.getElementById('quiz-screen').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            document.getElementById('final-score').innerText = score + "/12";
-            document.getElementById('result-message').innerText = score >= 10 ? "Incredible Work!" : "Great effort! Keep practicing.";
-        }
-    </script>
+function checkAnswer(selected) {
+  let correct = questions[current].answer;
+
+  if (selected === correct) {
+    score++;
+    document.getElementById("score").innerText = "Score: " + score;
+    nextQuestion();
+  } else {
+    attempts++;
+    if (attempts === 1) {
+      alert("Try again!");
+    } else {
+      alert("Correct Answer: " + questions[current].options[correct] + "\n" + questions[current].explanation);
+      nextQuestion();
+    }
+  }
+}
+
+function nextQuestion() {
+  clearInterval(timer);
+  current++;
+
+  if (current < questions.length) {
+    loadQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById("quiz").classList.add("hidden");
+  document.getElementById("result").classList.remove("hidden");
+  document.getElementById("finalScore").innerText = "Your Score: " + score + "/" + questions.length;
+}
+
+function restartQuiz() {
+  current = 0;
+  score = 0;
+  document.getElementById("score").innerText = "Score: 0";
+  document.getElementById("result").classList.add("hidden");
+  document.getElementById("intro").classList.remove("hidden");
+}
+
+</script>
+
 </body>
 </html>
