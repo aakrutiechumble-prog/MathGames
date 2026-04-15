@@ -1,1054 +1,346 @@
+Thanks for sharing that screenshot! I noticed a small but important detail: your logo file is named **`innovine-logo.jpg`**, but my previous code was looking for a `.png` file.
+
+I have updated the code below to match your exact file extension and ensured the relative pathing is correct for your GitHub structure.
+
+### **Important Note on Audio**
+Since I don't see audio files in your screenshot, the "Right/Wrong" sounds will simply be ignored by the browser unless you upload `correct.mp3` and `wrong.mp3` to that same `assets` folder.
+
+Here is your updated, ready-to-use **index.html**:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Addition – Grade 3 Mathematics | Innovine</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
-<style>
-  /* ─── VARIABLES ─────────────────────────────────────────── */
-  :root {
-    --sky:   #e8f4fd;
-    --blue:  #2d7dd2;
-    --teal:  #3bbfad;
-    --yellow:#f6c90e;
-    --coral: #f45b69;
-    --green: #2ec4b6;
-    --purple:#7b5ea7;
-    --dark:  #1a1f36;
-    --mid:   #4a5568;
-    --light: #f0f6ff;
-    --white: #ffffff;
-    --card:  #ffffff;
-    --shadow: 0 8px 32px rgba(45,125,210,.13);
-    --r: 20px;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Addition Mastery - Grade 3</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #22c55e;
+            --error: #ef4444;
+            --bg: #f8fafc;
+            --text: #1e293b;
+        }
 
-  /* ─── RESET ─────────────────────────────────────────────── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { font-size: 16px; }
-  body {
-    font-family: 'Nunito', sans-serif;
-    background: var(--sky);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    overflow-x: hidden;
-  }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text);
+        }
 
-  /* ─── BACKGROUND DECO ───────────────────────────────────── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background:
-      radial-gradient(circle at 10% 20%, rgba(59,191,173,.18) 0%, transparent 45%),
-      radial-gradient(circle at 90% 80%, rgba(45,125,210,.15) 0%, transparent 45%),
-      radial-gradient(circle at 50% 50%, rgba(246,201,14,.08) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-  }
+        #app-container {
+            width: 95%;
+            max-width: 550px;
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
 
-  /* floating math symbols */
-  .floaters {
-    position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
-  }
-  .floaters span {
-    position: absolute;
-    font-family: 'Fredoka One', cursive;
-    font-size: clamp(1.4rem, 3vw, 2.5rem);
-    opacity: .07;
-    animation: floatUp linear infinite;
-    color: var(--blue);
-  }
-  @keyframes floatUp {
-    0%   { transform: translateY(110vh) rotate(0deg); opacity: .07; }
-    100% { transform: translateY(-10vh)  rotate(360deg); opacity: 0; }
-  }
+        #logo-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
 
-  /* ─── WRAPPER ────────────────────────────────────────────── */
-  #app {
-    position: relative; z-index: 1;
-    width: 100%; max-width: 680px;
-  }
+        #logo-overlay img {
+            max-width: 180px;
+            height: auto;
+        }
 
-  /* ─── SCREENS ────────────────────────────────────────────── */
-  .screen {
-    display: none;
-    animation: fadeIn .45s ease;
-  }
-  .screen.active { display: block; }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+        .hidden { display: none !important; }
 
-  /* ─── SPLASH ─────────────────────────────────────────────── */
-  #splash {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 92vh;
-    gap: 20px;
-  }
-  #splash.active { display: flex; }
-  .splash-logo {
-    width: clamp(140px, 40vw, 200px);
-    object-fit: contain;
-    animation: popIn .6s cubic-bezier(.34,1.56,.64,1);
-  }
-  @keyframes popIn {
-    from { transform: scale(0); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-  }
-  .splash-tagline {
-    font-family: 'Fredoka One', cursive;
-    font-size: clamp(1.1rem, 4vw, 1.5rem);
-    color: var(--blue);
-    text-align: center;
-    animation: fadeIn .6s .4s both;
-  }
-  .splash-bar-wrap {
-    width: clamp(180px, 50vw, 260px);
-    height: 8px;
-    background: rgba(45,125,210,.15);
-    border-radius: 99px;
-    overflow: hidden;
-    animation: fadeIn .6s .6s both;
-  }
-  .splash-bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--teal), var(--blue));
-    border-radius: 99px;
-    animation: loadBar 5s linear forwards;
-  }
-  @keyframes loadBar {
-    from { width: 0; }
-    to   { width: 100%; }
-  }
+        /* Progress & Timer */
+        .header-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
 
-  /* ─── CARD BASE ──────────────────────────────────────────── */
-  .card {
-    background: var(--card);
-    border-radius: var(--r);
-    box-shadow: var(--shadow);
-    padding: clamp(20px, 5vw, 40px);
-  }
+        .timer-box {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--error);
+            padding: 5px 12px;
+            border: 2px solid var(--error);
+            border-radius: 20px;
+        }
 
-  /* ─── INTRO SCREEN ───────────────────────────────────────── */
-  .intro-header {
-    display: flex; align-items: center; gap: 14px;
-    margin-bottom: 20px;
-  }
-  .intro-emoji {
-    font-size: 2.8rem;
-    animation: bounce 1.5s infinite;
-  }
-  @keyframes bounce {
-    0%,100% { transform: translateY(0); }
-    50%      { transform: translateY(-8px); }
-  }
-  .intro-title {
-    font-family: 'Fredoka One', cursive;
-    font-size: clamp(1.4rem, 5vw, 2rem);
-    color: var(--dark);
-    line-height: 1.2;
-  }
-  .intro-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, var(--teal), var(--blue));
-    color: #fff;
-    font-size: .78rem;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 99px;
-    letter-spacing: .5px;
-    margin-top: 4px;
-  }
-  .intro-meta {
-    display: flex; flex-wrap: wrap; gap: 10px;
-    margin-bottom: 22px;
-  }
-  .meta-pill {
-    display: flex; align-items: center; gap: 6px;
-    background: var(--light);
-    border-radius: 99px;
-    padding: 6px 14px;
-    font-size: .85rem;
-    font-weight: 700;
-    color: var(--blue);
-  }
-  .intro-rules {
-    background: var(--light);
-    border-radius: 14px;
-    padding: 16px 18px;
-    margin-bottom: 24px;
-  }
-  .intro-rules h3 {
-    font-family: 'Fredoka One', cursive;
-    color: var(--purple);
-    font-size: 1rem;
-    margin-bottom: 10px;
-  }
-  .rule-item {
-    display: flex; gap: 10px; align-items: flex-start;
-    font-size: .88rem; color: var(--mid);
-    margin-bottom: 7px; line-height: 1.4;
-  }
-  .rule-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+        .score-box {
+            font-weight: 700;
+            color: var(--primary);
+        }
 
-  /* ─── BUTTON ─────────────────────────────────────────────── */
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    font-family: 'Fredoka One', cursive;
-    font-size: 1.05rem;
-    letter-spacing: .5px;
-    border: none; cursor: pointer;
-    border-radius: 99px;
-    padding: 14px 32px;
-    transition: transform .15s, box-shadow .15s, filter .15s;
-    text-decoration: none;
-    user-select: none;
-  }
-  .btn:active { transform: scale(.96); }
-  .btn-primary {
-    background: linear-gradient(135deg, var(--teal) 0%, var(--blue) 100%);
-    color: #fff;
-    box-shadow: 0 6px 20px rgba(45,125,210,.35);
-    width: 100%;
-  }
-  .btn-primary:hover { filter: brightness(1.08); box-shadow: 0 8px 26px rgba(45,125,210,.45); }
-  .btn-secondary {
-    background: var(--light);
-    color: var(--blue);
-    border: 2px solid var(--blue);
-    width: 100%;
-    margin-top: 10px;
-  }
+        .progress-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
 
-  /* ─── HUD (score + timer) ────────────────────────────────── */
-  .hud {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 18px; gap: 10px; flex-wrap: wrap;
-  }
-  .hud-score {
-    font-family: 'Fredoka One', cursive;
-    font-size: 1rem; color: var(--blue);
-    background: var(--light);
-    padding: 6px 16px; border-radius: 99px;
-  }
-  .hud-progress {
-    flex: 1; min-width: 100px;
-    height: 8px; background: rgba(45,125,210,.12);
-    border-radius: 99px; overflow: hidden;
-  }
-  .hud-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--teal), var(--blue));
-    border-radius: 99px;
-    transition: width .4s ease;
-  }
-  .hud-timer {
-    font-family: 'Fredoka One', cursive;
-    font-size: 1rem; min-width: 54px; text-align: center;
-    padding: 6px 14px; border-radius: 99px;
-    background: var(--light); color: var(--dark);
-    transition: background .3s, color .3s;
-  }
-  .hud-timer.urgent { background: #ffe0e3; color: var(--coral); animation: pulse .5s infinite; }
-  @keyframes pulse { 0%,100%{transform:scale(1)}50%{transform:scale(1.06)} }
+        #progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
 
-  /* ─── QUESTION CARD ──────────────────────────────────────── */
-  .q-label {
-    font-size: .78rem; font-weight: 800; letter-spacing: 1.5px;
-    text-transform: uppercase; color: var(--teal); margin-bottom: 10px;
-  }
-  .q-text {
-    font-size: clamp(1rem, 3vw, 1.18rem);
-    font-weight: 700; color: var(--dark);
-    line-height: 1.55; margin-bottom: 22px;
-  }
-  .q-badge {
-    display: inline-block;
-    background: linear-gradient(135deg,#fff3cd,#ffe082);
-    border: 1.5px solid #f6c90e;
-    color: #7a5900;
-    font-size: .72rem; font-weight: 800;
-    padding: 2px 10px; border-radius: 99px;
-    margin-bottom: 8px; letter-spacing: .4px;
-  }
+        /* Question UI */
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 12px 0;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: 0.2s;
+            text-align: left;
+        }
 
-  /* ─── OPTIONS ────────────────────────────────────────────── */
-  .options { display: flex; flex-direction: column; gap: 11px; }
-  .opt-btn {
-    display: flex; align-items: center; gap: 12px;
-    background: var(--light);
-    border: 2px solid transparent;
-    border-radius: 14px;
-    padding: 13px 16px;
-    cursor: pointer;
-    font-family: 'Nunito', sans-serif;
-    font-size: clamp(.88rem, 2.5vw, .98rem);
-    font-weight: 700; color: var(--dark);
-    text-align: left;
-    transition: border-color .2s, background .2s, transform .15s, box-shadow .2s;
-    line-height: 1.4;
-  }
-  .opt-btn:hover:not(:disabled) {
-    border-color: var(--blue);
-    background: #eaf3ff;
-    transform: translateX(4px);
-    box-shadow: 0 4px 14px rgba(45,125,210,.13);
-  }
-  .opt-btn:disabled { cursor: default; }
-  .opt-letter {
-    display: flex; align-items: center; justify-content: center;
-    min-width: 32px; height: 32px;
-    background: #fff; border-radius: 50%;
-    border: 2px solid #d0dcea;
-    font-family: 'Fredoka One', cursive;
-    font-size: .95rem; color: var(--blue); flex-shrink: 0;
-    transition: background .2s, border-color .2s, color .2s;
-  }
-  .opt-btn.correct {
-    background: #e6faf5; border-color: var(--green);
-    animation: correctPop .35s cubic-bezier(.34,1.56,.64,1);
-  }
-  .opt-btn.correct .opt-letter { background: var(--green); border-color: var(--green); color: #fff; }
-  @keyframes correctPop {
-    from { transform: scale(.95); }
-    to   { transform: scale(1); }
-  }
-  .opt-btn.wrong {
-    background: #fff0f1; border-color: var(--coral);
-    animation: shake .4s;
-  }
-  .opt-btn.wrong .opt-letter { background: var(--coral); border-color: var(--coral); color: #fff; }
-  @keyframes shake {
-    0%,100%{ transform: translateX(0); }
-    20%    { transform: translateX(-6px); }
-    40%    { transform: translateX(6px); }
-    60%    { transform: translateX(-4px); }
-    80%    { transform: translateX(4px); }
-  }
-  .opt-btn.revealed {
-    background: #e6f4ff; border-color: var(--blue);
-    border-style: dashed;
-  }
-  .opt-btn.revealed .opt-letter { background: var(--blue); border-color: var(--blue); color: #fff; }
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
 
-  /* ─── FEEDBACK BOX ───────────────────────────────────────── */
-  .feedback-box {
-    margin-top: 16px; padding: 13px 16px;
-    border-radius: 14px; font-size: .9rem; font-weight: 700;
-    line-height: 1.5; display: none; gap: 10px; align-items: flex-start;
-  }
-  .feedback-box.show { display: flex; animation: fadeIn .3s; }
-  .feedback-box.fb-correct { background: #e6faf5; color: #1a7a5e; border: 1.5px solid var(--green); }
-  .feedback-box.fb-wrong   { background: #fff0f1; color: #c0293a; border: 1.5px solid var(--coral); }
-  .feedback-box.fb-info    { background: #e8f4fd; color: #1a4a7a; border: 1.5px solid var(--blue); }
-  .feedback-icon { font-size: 1.2rem; flex-shrink: 0; }
+        .correct { background-color: var(--success) !important; color: white; border-color: var(--success); }
+        .wrong { background-color: var(--error) !important; color: white; border-color: var(--error); }
 
-  /* retry indicator */
-  .retry-hint {
-    text-align: center; font-size: .8rem; color: var(--mid);
-    margin-top: 8px; font-weight: 600;
-  }
-  .retry-dot {
-    display: inline-block; width: 10px; height: 10px;
-    border-radius: 50%; margin: 0 3px;
-    transition: background .3s;
-  }
-  .retry-dot.used { background: var(--coral); }
-  .retry-dot.avail { background: var(--green); }
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff9db;
+            border-left: 4px solid #fcc419;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            text-align: left;
+        }
 
-  /* ─── NEXT BUTTON AREA ───────────────────────────────────── */
-  .q-actions { margin-top: 18px; display: none; }
-  .q-actions.show { display: block; }
+        .main-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
 
-  /* ─── FINAL CHALLENGE SCREEN ─────────────────────────────── */
-  .challenge-banner {
-    background: linear-gradient(135deg, var(--purple), var(--blue));
-    border-radius: 16px; padding: 18px 20px;
-    margin-bottom: 22px; text-align: center; color: #fff;
-  }
-  .challenge-banner h2 {
-    font-family: 'Fredoka One', cursive;
-    font-size: clamp(1.3rem, 4vw, 1.7rem); margin-bottom: 4px;
-  }
-  .challenge-banner p { font-size: .9rem; opacity: .88; }
-
-  /* ─── RESULT SCREEN ──────────────────────────────────────── */
-  .result-hero {
-    text-align: center; padding: 10px 0 24px;
-  }
-  .result-emoji { font-size: 4rem; display: block; margin-bottom: 8px; }
-  .result-title {
-    font-family: 'Fredoka One', cursive;
-    font-size: clamp(1.5rem, 5vw, 2rem); color: var(--dark);
-    margin-bottom: 6px;
-  }
-  .result-sub { font-size: .95rem; color: var(--mid); margin-bottom: 20px; }
-  .result-score-ring {
-    width: 130px; height: 130px; margin: 0 auto 20px;
-    position: relative; display: flex; align-items: center; justify-content: center;
-  }
-  .ring-svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
-  .ring-bg   { fill: none; stroke: #e0ecf8; stroke-width: 10; }
-  .ring-fill { fill: none; stroke-width: 10; stroke-linecap: round;
-               stroke-dasharray: 339; stroke-dashoffset: 339;
-               transition: stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1); }
-  .ring-text {
-    font-family: 'Fredoka One', cursive;
-    font-size: 1.6rem; color: var(--blue); z-index: 1; line-height: 1;
-    text-align: center;
-  }
-  .ring-text span { display: block; font-size: .7rem; color: var(--mid); font-family: 'Nunito', sans-serif; font-weight: 700; }
-
-  .stats-grid {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px; margin-bottom: 22px;
-  }
-  .stat-card {
-    background: var(--light); border-radius: 14px;
-    padding: 12px 8px; text-align: center;
-  }
-  .stat-val {
-    font-family: 'Fredoka One', cursive;
-    font-size: 1.4rem; color: var(--blue); display: block;
-  }
-  .stat-lbl { font-size: .72rem; color: var(--mid); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
-
-  .result-message {
-    background: var(--light); border-radius: 14px;
-    padding: 14px 16px; margin-bottom: 22px;
-    font-size: .92rem; color: var(--mid); font-weight: 600; line-height: 1.5;
-    text-align: center;
-  }
-
-  /* ─── CONFETTI ───────────────────────────────────────────── */
-  .confetti-piece {
-    position: fixed; width: 10px; height: 10px;
-    border-radius: 2px; pointer-events: none; z-index: 999;
-    animation: confettiDrop 2s forwards ease-in;
-  }
-  @keyframes confettiDrop {
-    0%   { transform: translateY(-10px) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-  }
-
-  /* ─── TIMEOUT OVERLAY ────────────────────────────────────── */
-  .timeout-overlay {
-    display: none; position: fixed; inset: 0; z-index: 50;
-    background: rgba(26,31,54,.55); align-items: center; justify-content: center;
-  }
-  .timeout-overlay.show { display: flex; }
-  .timeout-card {
-    background: #fff; border-radius: 20px; padding: 30px 28px;
-    text-align: center; max-width: 320px; width: 90%;
-    animation: popIn .4s cubic-bezier(.34,1.56,.64,1);
-    box-shadow: 0 20px 60px rgba(0,0,0,.2);
-  }
-  .timeout-card h2 { font-family: 'Fredoka One', cursive; font-size: 1.5rem; color: var(--coral); margin-bottom: 6px; }
-  .timeout-card p  { font-size: .9rem; color: var(--mid); margin-bottom: 18px; line-height: 1.5; }
-
-  /* ─── RESPONSIVE ─────────────────────────────────────────── */
-  @media (max-width: 400px) {
-    .stats-grid { grid-template-columns: 1fr 1fr; }
-    .hud { flex-wrap: wrap; }
-  }
-</style>
+        h3 { line-height: 1.4; margin-bottom: 20px; }
+    </style>
 </head>
 <body>
 
-<!-- Floating math symbols -->
-<div class="floaters" id="floaters"></div>
+    <div id="logo-overlay">
+        <img src="../assets/innovine-logo.jpg" alt="Innovine Logo">
+    </div>
 
-<div id="app">
-
-  <!-- ══════════════════ SPLASH ══════════════════ -->
-  <div id="splash" class="screen active">
-    <img src="../assets/innovine-logo.jpg" alt="Innovine" class="splash-logo" onerror="this.style.display='none'">
-    <div class="splash-tagline">Powered by Innovine Learning</div>
-    <div class="splash-bar-wrap"><div class="splash-bar"></div></div>
-  </div>
-
-  <!-- ══════════════════ INTRO ══════════════════ -->
-  <div id="intro" class="screen">
-    <div class="card">
-      <div class="intro-header">
-        <div class="intro-emoji">➕</div>
-        <div>
-          <div class="intro-title">Addition</div>
-          <div class="intro-badge">Grade 3 · Mathematics</div>
+    <div id="app-container" class="hidden">
+        <div id="intro-screen">
+            <h2 style="margin-top:0">Math Challenge: Addition</h2>
+            <p>Grade 3 | 12 Questions</p>
+            <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: left; font-size: 0.9rem;">
+                • 60 seconds per question<br>
+                • 2 attempts per question<br>
+                • Explanations provided after errors
+            </div>
+            <button class="main-btn" onclick="startQuiz()">Start Quiz</button>
         </div>
-      </div>
 
-      <div class="intro-meta">
-        <div class="meta-pill">📚 12 Questions</div>
-        <div class="meta-pill">⏱ 60 sec / question</div>
-        <div class="meta-pill">🔄 1 Retry allowed</div>
-      </div>
+        <div id="quiz-screen" class="hidden">
+            <div class="header-meta">
+                <div class="score-box">Score: <span id="current-score">0</span></div>
+                <div id="timer" class="timer-box">60s</div>
+            </div>
+            <div class="progress-bar"><div id="progress-fill"></div></div>
+            
+            <h3 id="question-text"></h3>
+            <div id="options-container"></div>
+            
+            <div id="feedback" class="explanation hidden"></div>
+            <button id="next-btn" class="main-btn hidden" onclick="nextQuestion()">Next Question</button>
+        </div>
 
-      <div class="intro-rules">
-        <h3>📋 How to Play</h3>
-        <div class="rule-item"><span class="rule-icon">✅</span><span>Read each question carefully and pick the best answer.</span></div>
-        <div class="rule-item"><span class="rule-icon">🔄</span><span>You get <strong>one retry</strong> if your first answer is wrong.</span></div>
-        <div class="rule-item"><span class="rule-icon">💡</span><span>After two wrong attempts, the correct answer and explanation are shown.</span></div>
-        <div class="rule-item"><span class="rule-icon">⏱</span><span>Each question has a <strong>60-second timer</strong>. Don't let it run out!</span></div>
-        <div class="rule-item"><span class="rule-icon">🏆</span><span>Try to score as high as possible. Good luck!</span></div>
-      </div>
-
-      <button class="btn btn-primary" onclick="startQuiz()">🚀 Start Quiz</button>
-    </div>
-  </div>
-
-  <!-- ══════════════════ QUESTION ══════════════════ -->
-  <div id="question-screen" class="screen">
-    <!-- HUD -->
-    <div class="hud">
-      <div class="hud-score" id="score-display">⭐ 0 / 12</div>
-      <div class="hud-progress"><div class="hud-progress-fill" id="progress-fill" style="width:0%"></div></div>
-      <div class="hud-timer" id="timer-display">60</div>
+        <div id="result-screen" class="hidden">
+            <h2>Challenge Complete!</h2>
+            <div style="font-size: 4rem; font-weight: 800; color: var(--primary); margin: 20px 0;" id="final-score">0</div>
+            <p id="result-message" style="font-weight: 500; margin-bottom: 30px;"></p>
+            <button class="main-btn" onclick="location.reload()">Try Again</button>
+        </div>
     </div>
 
-    <div class="card" id="q-card">
-      <div class="q-label" id="q-label">Question 1 of 12</div>
-      <div id="q-badge"></div>
-      <div class="q-text" id="q-text"></div>
-      <div class="options" id="options"></div>
+    <audio id="snd-correct" src="../assets/correct.mp3"></audio>
+    <audio id="snd-wrong" src="../assets/wrong.mp3"></audio>
 
-      <div class="retry-hint" id="retry-hint" style="display:none">
-        Attempts: <span class="retry-dot avail" id="dot1"></span><span class="retry-dot avail" id="dot2"></span>
-      </div>
+    <script>
+        const questions = [
+            { q: "Riya has 125 stickers. She wants 150. She gets 23 more. Does she reach her goal?", a: ["Yes, she has more than 150", "Yes, she has exactly 150", "No, she has less than 150", "Cannot be found"], c: 2, e: "125 + 23 = 148. Since 148 is less than 150, she hasn't reached her goal yet." },
+            { q: "A teacher has 132 books. She buys some more and now has 150 books. How many books did she buy?", a: ["12", "18", "20", "28"], c: 1, e: "To find the missing part: 150 - 132 = 18." },
+            { q: "A shop sold 210 notebooks in the morning. By afternoon, total sales became 255. How many were sold in the afternoon?", a: ["35", "40", "45", "50"], c: 2, e: "The increase from 210 to 255 is 45 (255 - 210 = 45)." },
+            { q: "A shop sold 120 pens and 80 pencils. How many more pens than pencils were sold?", a: ["20", "30", "40", "50"], c: 2, e: "120 - 80 = 40. There are 40 extra pens." },
+            { q: "Class A collected 145 books and Class B collected 155 books. Which statement is correct?", a: ["Class A collected more books", "Class B collected 10 more books", "Both collected equal books", "Class B collected 20 more books"], c: 1, e: "155 is 10 more than 145." },
+            { q: "Aarav solved: 120 + 25 = 135. What mistake did he make?", a: ["Added ones incorrectly", "Added tens incorrectly", "Ignored tens completely", "No mistake"], c: 1, e: "120 + 25 should be 145. He likely added 2 tens + 2 tens incorrectly as 3 tens." },
+            { q: "Meera solved: 145 + 32 = 167. Which is correct?", a: ["Ones are added wrongly", "Tens are added wrongly", "Carry is missing", "Answer is correct"], c: 1, e: "145 + 32 = 177. She wrote 6 instead of 7 in the tens place." },
+            { q: "Rohan solved: 230 + 40 = 240. Why is this wrong?", a: ["Tens were not added correctly", "Ones were added wrongly", "Hundreds were added twice", "No mistake"], c: 0, e: "3 tens + 4 tens = 7 tens. The answer should be 270." },
+            { q: "Assertion: 40 + 30 = 70. Reason: We add tens to tens.", a: ["Both are correct and reason explains assertion", "Both are correct but reason does not explain", "Assertion is correct, reason is wrong", "Both are wrong"], c: 0, e: "Place value addition means adding digits in the same column." },
+            { q: "Assertion: 125 + 25 = 150. Reason: Adding 25 increases the number by 25.", a: ["Both are correct and reason explains assertion", "Both are correct but reason does not explain", "Assertion is correct, reason is wrong", "Both are wrong"], c: 0, e: "Addition represents an increase by the value of the second number." },
+            { q: "A school needs 300 books. They got 145 on Day 1 and 155 on Day 2. If they donate 20, will they have enough?", a: ["Yes, exactly enough", "Yes, more than enough", "No, less than needed", "Cannot be found"], c: 2, e: "145 + 155 = 300. If they give 20 away, they only have 280 left, which is not enough." },
+            { q: "Riya has 135 books, Ameya has 145, and library had 120. How many full groups of 100 can they make?", a: ["3", "4", "5", "6"], c: 1, e: "Total: 135 + 145 + 120 = 400. 400 makes exactly 4 groups of 100." }
+        ];
 
-      <div class="feedback-box" id="feedback-box">
-        <span class="feedback-icon" id="fb-icon"></span>
-        <span id="fb-text"></span>
-      </div>
+        let currentQ = 0;
+        let score = 0;
+        let attempts = 0;
+        let timeLeft = 60;
+        let timerInterval;
 
-      <div class="q-actions" id="q-actions">
-        <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()">Next Question →</button>
-      </div>
-    </div>
-  </div>
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('logo-overlay').style.display = 'none';
+                document.getElementById('app-container').classList.remove('hidden');
+            }, 5000);
+        };
 
-  <!-- ══════════════════ RESULT ══════════════════ -->
-  <div id="result-screen" class="screen">
-    <div class="card">
-      <div class="result-hero">
-        <span class="result-emoji" id="result-emoji">🎉</span>
-        <div class="result-title" id="result-title">Well Done!</div>
-        <div class="result-sub" id="result-sub">You completed the Addition quiz!</div>
-      </div>
+        function startQuiz() {
+            document.getElementById('intro-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            loadQuestion();
+        }
 
-      <div class="result-score-ring">
-        <svg class="ring-svg" viewBox="0 0 120 120">
-          <circle class="ring-bg"   cx="60" cy="60" r="54"/>
-          <circle class="ring-fill" cx="60" cy="60" r="54" id="ring-fill"/>
-        </svg>
-        <div class="ring-text" id="ring-text">0%<span>Score</span></div>
-      </div>
+        function loadQuestion() {
+            attempts = 0;
+            timeLeft = 60;
+            document.getElementById('timer').innerText = timeLeft + "s";
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+            
+            const qData = questions[currentQ];
+            document.getElementById('question-text').innerText = qData.q;
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            qData.a.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                container.appendChild(btn);
+            });
 
-      <div class="stats-grid">
-        <div class="stat-card"><span class="stat-val" id="stat-correct">0</span><span class="stat-lbl">Correct</span></div>
-        <div class="stat-card"><span class="stat-val" id="stat-wrong">0</span><span class="stat-lbl">Wrong</span></div>
-        <div class="stat-card"><span class="stat-val" id="stat-time">0s</span><span class="stat-lbl">Avg Time</span></div>
-      </div>
+            startTimer();
+            updateProgress();
+        }
 
-      <div class="result-message" id="result-message"></div>
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = timeLeft + "s";
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    revealCorrect();
+                }
+            }, 1000);
+        }
 
-      <button class="btn btn-primary" onclick="restartQuiz()">🔁 Play Again</button>
-    </div>
-  </div>
+        function checkAnswer(index, btn) {
+            const correctIdx = questions[currentQ].c;
+            
+            if (index === correctIdx) {
+                btn.classList.add('correct');
+                playSound('snd-correct');
+                if (attempts === 0) score++;
+                document.getElementById('current-score').innerText = score;
+                lockOptions();
+                endQuestion();
+            } else {
+                attempts++;
+                btn.classList.add('wrong');
+                btn.disabled = true;
+                playSound('snd-wrong');
+                
+                if (attempts >= 2) {
+                    revealCorrect();
+                }
+            }
+        }
 
-</div>
+        function revealCorrect() {
+            lockOptions();
+            const btns = document.querySelectorAll('.option-btn');
+            btns[questions[currentQ].c].classList.add('correct');
+            
+            const fb = document.getElementById('feedback');
+            fb.innerText = "Explanation: " + questions[currentQ].e;
+            fb.classList.remove('hidden');
+            endQuestion();
+        }
 
-<!-- Timeout overlay -->
-<div class="timeout-overlay" id="timeout-overlay">
-  <div class="timeout-card">
-    <div style="font-size:2.5rem">⏰</div>
-    <h2>Time's Up!</h2>
-    <p>You ran out of time. The correct answer has been marked below.</p>
-    <button class="btn btn-primary" style="width:auto;padding:10px 28px" onclick="dismissTimeout()">Got it!</button>
-  </div>
-</div>
+        function lockOptions() {
+            clearInterval(timerInterval);
+            const btns = document.querySelectorAll('.option-btn');
+            btns.forEach(b => b.disabled = true);
+        }
 
-<script>
-/* ═══════════════════════════════════════════════
-   DATA
-═══════════════════════════════════════════════ */
-const QUESTIONS = [
-  {
-    q: "Riya has 125 stickers. She gets 23 more. Does she reach her goal of 150 stickers?",
-    opts: [
-      "Yes, she has more than 150",
-      "Yes, she has exactly 150",
-      "No, she has less than 150",
-      "Cannot be found"
-    ],
-    ans: 0,
-    exp: "125 + 23 = 148. Since 148 > 150 is false, she has MORE than 148 but let's check: 125 + 23 = 148, which is less than 150. Wait — 125 + 25 = 150, but she only got 23 more, so 125 + 23 = 148 < 150. She does NOT reach her goal.",
-    // corrected answer index:
-    correct: 2,
-    type: "normal"
-  },
-  {
-    q: "A teacher has 132 books. She buys some more and now has 150 books. How many books did she buy?",
-    opts: ["12", "18", "20", "28"],
-    correct: 1,
-    exp: "150 − 132 = 18. She bought 18 books to go from 132 to 150.",
-    type: "normal"
-  },
-  {
-    q: "A shop sold 210 notebooks in the morning. By afternoon, total sales became 255. How many notebooks were sold in the afternoon?",
-    opts: ["35", "40", "45", "50"],
-    correct: 2,
-    exp: "255 − 210 = 45. So 45 notebooks were sold in the afternoon.",
-    type: "normal"
-  },
-  {
-    q: "A shop sold 120 pens and 80 pencils. How many more pens than pencils were sold?",
-    opts: ["20", "30", "40", "50"],
-    correct: 2,
-    exp: "120 − 80 = 40. There were 40 more pens sold than pencils.",
-    type: "normal"
-  },
-  {
-    q: "Class A collected 145 books and Class B collected 155 books. Which statement is correct?",
-    opts: [
-      "Class A collected more books",
-      "Class B collected 10 more books",
-      "Both collected equal books",
-      "Class B collected 20 more books"
-    ],
-    correct: 1,
-    exp: "155 − 145 = 10. Class B collected exactly 10 more books than Class A.",
-    type: "normal"
-  },
-  {
-    q: "Aarav solved: 120 + 25 = 135. What mistake did he make?",
-    opts: [
-      "Added ones incorrectly",
-      "Added tens incorrectly",
-      "Ignored tens completely",
-      "No mistake"
-    ],
-    correct: 1,
-    exp: "120 + 25: ones → 0 + 5 = 5, tens → 2 + 2 = 4, hundreds → 1. Correct answer is 145. Aarav got 135, meaning he added the tens incorrectly (got 3 instead of 4).",
-    type: "error-spotting"
-  },
-  {
-    q: "Meera solved: 145 + 32 = 177. Which statement is correct?",
-    opts: [
-      "Ones are added wrongly",
-      "Tens are added wrongly",
-      "Carry is missing",
-      "Answer is correct"
-    ],
-    correct: 1,
-    exp: "145 + 32: ones → 5 + 2 = 7 ✓, tens → 4 + 3 = 7 ✓, hundreds → 1. Correct = 177. Wait — 145 + 32 = 177, so the answer IS correct.",
-    // re-check: 145+32=177, so answer is correct
-    correct: 3,
-    exp: "145 + 32: ones → 5 + 2 = 7, tens → 4 + 3 = 7, hundreds → 1. The answer 177 is correct! Meera made no mistake.",
-    type: "error-spotting"
-  },
-  {
-    q: "Rohan solved: 230 + 40 = 240. Why is this wrong?",
-    opts: [
-      "Tens were not added correctly",
-      "Ones were added wrongly",
-      "Hundreds were added twice",
-      "No mistake"
-    ],
-    correct: 0,
-    exp: "230 + 40: ones → 0 + 0 = 0, tens → 3 + 4 = 7, hundreds → 2. Correct answer = 270. Rohan got 240 instead of 270 — he did not add the tens correctly.",
-    type: "error-spotting"
-  },
-  {
-    q: "Assertion: 40 + 30 = 70 | Reason: We add tens to tens.",
-    opts: [
-      "Both are correct and reason explains assertion",
-      "Both are correct but reason does not explain",
-      "Assertion is correct, reason is wrong",
-      "Both are wrong"
-    ],
-    correct: 0,
-    exp: "40 + 30 = 70 is true. The reason 'we add tens to tens' correctly explains why: 4 tens + 3 tens = 7 tens = 70.",
-    type: "assertion"
-  },
-  {
-    q: "Assertion: 125 + 25 = 150 | Reason: Adding 25 increases the number by 25.",
-    opts: [
-      "Both are correct and reason explains assertion",
-      "Both are correct but reason does not explain",
-      "Assertion is correct, reason is wrong",
-      "Both are wrong"
-    ],
-    correct: 0,
-    exp: "125 + 25 = 150 ✓. The reason is also correct — adding 25 means the number goes up by 25. The reason directly explains the assertion.",
-    type: "assertion"
-  },
-  {
-    q: "A school needs 300 books. They collected 145 on Day 1 and 155 on Day 2, then donated 20 books. Will they still have enough?",
-    opts: [
-      "Yes, exactly enough",
-      "Yes, more than enough",
-      "No, less than needed",
-      "Cannot be found"
-    ],
-    correct: 0,
-    exp: "145 + 155 = 300 books. After donating 20: 300 − 20 = 280. They need 300 but have 280, so they do NOT have enough. Wait — they collected exactly 300 then donated 20, leaving 280 < 300. So answer is: No, less than needed.",
-    correct: 2,
-    exp: "145 + 155 = 300 books collected. After donating 20: 300 − 20 = 280 books. They needed 300 but now have only 280, so they fall short.",
-    type: "challenge"
-  },
-  {
-    q: "Riya has 135 books, Ameya has 145 books, and there are already 120 books in the library. Books are arranged in groups of 100. How many full groups can be made?",
-    opts: ["3", "4", "5", "6"],
-    correct: 1,
-    exp: "Total = 135 + 145 + 120 = 400 books. 400 ÷ 100 = 4 full groups of 100.",
-    type: "challenge"
-  }
-];
+        function endQuestion() {
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
 
-/* Fix duplicate 'correct' keys — keep last declared (JS behavior) */
+        function nextQuestion() {
+            currentQ++;
+            if (currentQ < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
 
-/* ═══════════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════════ */
-let currentQ   = 0;
-let score      = 0;
-let attempts   = 0;   // attempts on current question
-let timerVal   = 60;
-let timerID    = null;
-let answered   = false;
-let timeTaken  = [];
-let questionStart = 0;
+        function updateProgress() {
+            const percent = ((currentQ) / questions.length) * 100;
+            document.getElementById('progress-fill').style.width = percent + "%";
+        }
 
-const TIMER_SECS = 60;
+        function playSound(id) {
+            const sound = document.getElementById(id);
+            if(sound) {
+                sound.currentTime = 0;
+                sound.play().catch(() => {});
+            }
+        }
 
-/* ═══════════════════════════════════════════════
-   AUDIO (Web Audio API)
-═══════════════════════════════════════════════ */
-const AC = new (window.AudioContext || window.webkitAudioContext)();
-
-function playTone(freq, type, dur, vol=0.22, delay=0) {
-  const o = AC.createOscillator();
-  const g = AC.createGain();
-  o.connect(g); g.connect(AC.destination);
-  o.type = type; o.frequency.value = freq;
-  g.gain.setValueAtTime(0, AC.currentTime + delay);
-  g.gain.linearRampToValueAtTime(vol, AC.currentTime + delay + 0.01);
-  g.gain.linearRampToValueAtTime(0,   AC.currentTime + delay + dur);
-  o.start(AC.currentTime + delay);
-  o.stop(AC.currentTime  + delay + dur + 0.05);
-}
-function soundCorrect() {
-  playTone(523, 'sine', .15);
-  playTone(659, 'sine', .15, .22, .12);
-  playTone(784, 'sine', .25, .22, .24);
-}
-function soundWrong() {
-  playTone(300, 'sawtooth', .12, .18);
-  playTone(220, 'sawtooth', .18, .18, .1);
-}
-function soundTimeout() {
-  playTone(400, 'triangle', .4, .18);
-  playTone(320, 'triangle', .4, .18, .35);
-}
-function soundResult(good) {
-  if (good) {
-    [523,659,784,1047].forEach((f,i) => playTone(f,'sine',.22,.2,i*.12));
-  } else {
-    playTone(260,'sawtooth',.5,.15);
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   SPLASH → INTRO
-═══════════════════════════════════════════════ */
-window.addEventListener('DOMContentLoaded', () => {
-  spawnFloaters();
-  setTimeout(() => {
-    showScreen('intro');
-  }, 5000);
-});
-
-function spawnFloaters() {
-  const syms = ['+','=','1','2','3','4','5','0','✚','➕'];
-  const container = document.getElementById('floaters');
-  for (let i = 0; i < 18; i++) {
-    const s = document.createElement('span');
-    s.textContent = syms[Math.floor(Math.random()*syms.length)];
-    s.style.left = Math.random()*100 + 'vw';
-    s.style.animationDuration = (8 + Math.random()*14) + 's';
-    s.style.animationDelay    = (Math.random()*12) + 's';
-    container.appendChild(s);
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   SCREEN SWITCHING
-═══════════════════════════════════════════════ */
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-/* ═══════════════════════════════════════════════
-   QUIZ LOGIC
-═══════════════════════════════════════════════ */
-function startQuiz() {
-  currentQ = 0; score = 0; timeTaken = [];
-  showScreen('question-screen');
-  loadQuestion();
-}
-
-function loadQuestion() {
-  if (AC.state === 'suspended') AC.resume();
-  attempts = 0; answered = false; questionStart = Date.now();
-
-  const q = QUESTIONS[currentQ];
-  const total = QUESTIONS.length;
-
-  // Labels / progress
-  document.getElementById('q-label').textContent = `Question ${currentQ+1} of ${total}`;
-  document.getElementById('progress-fill').style.width = `${(currentQ/total)*100}%`;
-  document.getElementById('score-display').textContent = `⭐ ${score} / ${total}`;
-
-  // Badge for type
-  const badgeEl = document.getElementById('q-badge');
-  if (q.type === 'error-spotting') {
-    badgeEl.innerHTML = '<div class="q-badge">🔍 Error Spotting</div>';
-  } else if (q.type === 'assertion') {
-    badgeEl.innerHTML = '<div class="q-badge">💬 Assertion & Reason</div>';
-  } else if (q.type === 'challenge') {
-    badgeEl.innerHTML = '<div class="q-badge">🏆 Final Challenge</div>';
-  } else {
-    badgeEl.innerHTML = '';
-  }
-
-  document.getElementById('q-text').textContent = q.q;
-
-  // Options
-  const optContainer = document.getElementById('options');
-  optContainer.innerHTML = '';
-  const letters = ['A','B','C','D'];
-  q.opts.forEach((opt, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'opt-btn';
-    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${opt}</span>`;
-    btn.onclick = () => handleAnswer(i);
-    optContainer.appendChild(btn);
-  });
-
-  // Reset feedback + actions
-  const fb = document.getElementById('feedback-box');
-  fb.className = 'feedback-box';
-  fb.style.display = '';
-
-  document.getElementById('q-actions').classList.remove('show');
-  document.getElementById('retry-hint').style.display = 'none';
-
-  // Start timer
-  startTimer();
-}
-
-function startTimer() {
-  clearInterval(timerID);
-  timerVal = TIMER_SECS;
-  updateTimerDisplay();
-  timerID = setInterval(() => {
-    timerVal--;
-    updateTimerDisplay();
-    if (timerVal <= 0) {
-      clearInterval(timerID);
-      handleTimeout();
-    }
-  }, 1000);
-}
-
-function updateTimerDisplay() {
-  const el = document.getElementById('timer-display');
-  el.textContent = timerVal + 's';
-  el.classList.toggle('urgent', timerVal <= 10);
-}
-
-function handleTimeout() {
-  if (answered) return;
-  answered = true;
-  soundTimeout();
-  disableOptions();
-  revealCorrect();
-  showFeedback('info', '⏰', `Time's up! The correct answer has been highlighted.`);
-  document.getElementById('q-actions').classList.add('show');
-  document.getElementById('next-btn').textContent = currentQ < QUESTIONS.length - 1 ? 'Next Question →' : 'See Results 🏆';
-  timeTaken.push(TIMER_SECS);
-
-  document.getElementById('timeout-overlay').classList.add('show');
-}
-
-function dismissTimeout() {
-  document.getElementById('timeout-overlay').classList.remove('show');
-}
-
-function handleAnswer(chosen) {
-  if (answered) return;
-  clearInterval(timerID);
-
-  const q = QUESTIONS[currentQ];
-  const correct = q.correct;
-  const opts = document.querySelectorAll('.opt-btn');
-  const elapsed = Math.round((Date.now() - questionStart) / 1000);
-
-  if (chosen === correct) {
-    // CORRECT
-    answered = true;
-    opts[chosen].classList.add('correct');
-    soundCorrect();
-    const pts = attempts === 0 ? 1 : 1; // point regardless (but full point only first try for display)
-    if (attempts === 0) score++;
-    timeTaken.push(elapsed);
-    showFeedback('correct', '✅', `Correct! ${q.exp}`);
-    document.getElementById('score-display').textContent = `⭐ ${score} / ${QUESTIONS.length}`;
-    document.getElementById('q-actions').classList.add('show');
-    document.getElementById('next-btn').textContent = currentQ < QUESTIONS.length - 1 ? 'Next Question →' : 'See Results 🏆';
-  } else {
-    // WRONG
-    opts[chosen].classList.add('wrong');
-    soundWrong();
-    attempts++;
-
-    if (attempts === 1) {
-      // First wrong → retry
-      showFeedback('wrong', '❌', 'Not quite! You have one more try. Think carefully.');
-      showRetryHint(1);
-      // Re-enable other options
-      opts.forEach((btn, i) => {
-        if (i !== chosen) btn.classList.remove('wrong');
-        if (i === chosen) btn.disabled = true;
-      });
-    } else {
-      // Second wrong → reveal
-      answered = true;
-      timeTaken.push(elapsed);
-      disableOptions();
-      revealCorrect();
-      showFeedback('info', '💡', `The correct answer is highlighted. ${q.exp}`);
-      document.getElementById('q-actions').classList.add('show');
-      document.getElementById('next-btn').textContent = currentQ < QUESTIONS.length - 1 ? 'Next Question →' : 'See Results 🏆';
-      showRetryHint(2);
-    }
-  }
-}
-
-function showRetryHint(used) {
-  document.getElementById('retry-hint').style.display = 'block';
-  document.getElementById('dot1').className = 'retry-dot ' + (used >= 1 ? 'used' : 'avail');
-  document.getElementById('dot2').className = 'retry-dot ' + (used >= 2 ? 'used' : 'avail');
-}
-
-function disableOptions() {
-  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
-}
-
-function revealCorrect() {
-  const opts = document.querySelectorAll('.opt-btn');
-  opts[QUESTIONS[currentQ].correct].classList.add('revealed');
-}
-
-function showFeedback(type, icon, text) {
-  const fb = document.getElementById('feedback-box');
-  fb.className = `feedback-box fb-${type} show`;
-  document.getElementById('fb-icon').textContent = icon;
-  document.getElementById('fb-text').textContent = text;
-}
-
-function nextQuestion() {
-  currentQ++;
-  if (currentQ >= QUESTIONS.length) {
-    showResults();
-  } else {
-    loadQuestion();
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   RESULTS
-═══════════════════════════════════════════════ */
-function showResults() {
-  showScreen('result-screen');
-  const total = QUESTIONS.length;
-  const pct   = Math.round((score / total) * 100);
-  const avgT  = timeTaken.length ? Math.round(timeTaken.reduce((a,b)=>a+b,0)/timeTaken.length) : 0;
-
-  // Emoji + title
-  let emoji, title, msg;
-  if (pct === 100) {
-    emoji = '🏆'; title = 'Perfect Score!';
-    msg = 'Absolutely brilliant! You answered every addition question correctly. You are an addition champion! 🌟';
-    soundResult(true); launchConfetti();
-  } else if (pct >= 75) {
-    emoji = '🎉'; title = 'Great Work!';
-    msg = 'Excellent performance! You have a strong understanding of addition. Review the questions you missed and you\'ll be perfect next time!';
-    soundResult(true); launchConfetti();
-  } else if (pct >= 50) {
-    emoji = '👍'; title = 'Good Effort!';
-    msg = 'You are getting there! Practice adding 2-digit and 3-digit numbers more and you will improve quickly.';
-    soundResult(true);
-  } else {
-    emoji = '💪'; title = 'Keep Practising!';
-    msg = 'Don\'t give up! Go back and review addition of 3-digit numbers. Every expert was once a beginner. Try again!';
-    soundResult(false);
-  }
-
-  document.getElementById('result-emoji').textContent = emoji;
-  document.getElementById('result-title').textContent = title;
-  document.getElementById('result-sub').textContent   = `You scored ${score} out of ${total}`;
-  document.getElementById('result-message').textContent = msg;
-
-  document.getElementById('stat-correct').textContent = score;
-  document.getElementById('stat-wrong').textContent   = total - score;
-  document.getElementById('stat-time').textContent    = avgT + 's';
-  document.getElementById('ring-text').innerHTML      = `${pct}%<span>Score</span>`;
-
-  // Animate ring
-  const circumference = 339;
-  const offset = circumference - (pct / 100) * circumference;
-  const ringFill = document.getElementById('ring-fill');
-  const color = pct >= 75 ? '#2ec4b6' : pct >= 50 ? '#f6c90e' : '#f45b69';
-  ringFill.style.stroke = color;
-  setTimeout(() => { ringFill.style.strokeDashoffset = offset; }, 100);
-}
-
-function launchConfetti() {
-  const colors = ['#f6c90e','#2d7dd2','#f45b69','#2ec4b6','#7b5ea7','#3bbfad'];
-  for (let i = 0; i < 60; i++) {
-    setTimeout(() => {
-      const el = document.createElement('div');
-      el.className = 'confetti-piece';
-      el.style.cssText = `
-        left:${Math.random()*100}vw;
-        top:-10px;
-        background:${colors[Math.floor(Math.random()*colors.length)]};
-        width:${6+Math.random()*8}px;
-        height:${6+Math.random()*8}px;
-        border-radius:${Math.random()>.5?'50%':'2px'};
-        animation-duration:${1.5+Math.random()*1.5}s;
-        animation-delay:${Math.random()*0.8}s;
-      `;
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 3500);
-    }, i * 30);
-  }
-}
-
-function restartQuiz() {
-  startQuiz();
-}
-</script>
+        function showResults() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score + " / " + questions.length;
+            
+            let msg = "";
+            if (score >= 10) msg = "Excellent! You're an addition pro!";
+            else if (score >= 7) msg = "Good job! A little more practice and you'll be perfect.";
+            else msg = "Keep practicing! Addition is a superpower you can master.";
+            document.getElementById('result-message').innerText = msg;
+        }
+    </script>
 </body>
 </html>
+```
