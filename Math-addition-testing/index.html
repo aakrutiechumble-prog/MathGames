@@ -1,49 +1,38 @@
-Thanks for sharing that screenshot! I noticed a small but important detail: your logo file is named **`innovine-logo.jpg`**, but my previous code was looking for a `.png` file.
-
-I have updated the code below to match your exact file extension and ensured the relative pathing is correct for your GitHub structure.
-
-### **Important Note on Audio**
-Since I don't see audio files in your screenshot, the "Right/Wrong" sounds will simply be ignored by the browser unless you upload `correct.mp3` and `wrong.mp3` to that same `assets` folder.
-
-Here is your updated, ready-to-use **index.html**:
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Addition Mastery - Grade 3</title>
+    <title>Addition – Grade 3 Mathematics | Innovine</title>
     <style>
         :root {
-            --primary: #2563eb;
+            --primary: #1e293b; /* Dark blue from Innovine logo */
+            --accent: #e04e39;  /* Red/Orange from Innovine logo */
             --success: #22c55e;
             --error: #ef4444;
             --bg: #f8fafc;
-            --text: #1e293b;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg);
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            color: var(--text);
+            color: #1e293b;
         }
 
         #app-container {
-            width: 95%;
-            max-width: 550px;
+            width: 90%;
+            max-width: 600px;
             background: white;
-            padding: 2rem;
+            padding: 2.5rem;
             border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             text-align: center;
             position: relative;
-            overflow: hidden;
         }
 
         #logo-overlay {
@@ -57,49 +46,28 @@ Here is your updated, ready-to-use **index.html**:
         }
 
         #logo-overlay img {
-            max-width: 180px;
+            max-width: 250px;
             height: auto;
         }
 
         .hidden { display: none !important; }
 
-        /* Progress & Timer */
-        .header-meta {
+        .header-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
         }
 
-        .timer-box {
-            font-weight: 700;
+        #timer {
+            font-weight: bold;
             font-size: 1.1rem;
             color: var(--error);
-            padding: 5px 12px;
             border: 2px solid var(--error);
+            padding: 4px 12px;
             border-radius: 20px;
         }
 
-        .score-box {
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .progress-bar {
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 10px;
-            margin-bottom: 25px;
-        }
-
-        #progress-fill {
-            height: 100%;
-            background: var(--primary);
-            width: 0%;
-            transition: width 0.4s ease;
-        }
-
-        /* Question UI */
         .option-btn {
             display: block;
             width: 100%;
@@ -110,16 +78,11 @@ Here is your updated, ready-to-use **index.html**:
             background: white;
             cursor: pointer;
             font-size: 1rem;
-            font-weight: 500;
-            transition: 0.2s;
+            transition: 0.3s;
             text-align: left;
         }
 
-        .option-btn:hover:not(:disabled) {
-            border-color: var(--primary);
-            background: #eff6ff;
-        }
-
+        .option-btn:hover:not(:disabled) { border-color: var(--accent); background: #fff5f5; }
         .correct { background-color: var(--success) !important; color: white; border-color: var(--success); }
         .wrong { background-color: var(--error) !important; color: white; border-color: var(--error); }
 
@@ -127,65 +90,73 @@ Here is your updated, ready-to-use **index.html**:
             margin-top: 15px;
             padding: 15px;
             background: #fff9db;
-            border-left: 4px solid #fcc419;
-            border-radius: 4px;
+            border-radius: 8px;
             font-size: 0.95rem;
             text-align: left;
+            border-left: 5px solid #fab005;
         }
 
         .main-btn {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 14px 30px;
+            padding: 14px 28px;
             border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 1.1rem;
+            font-weight: bold;
             cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
+            transition: opacity 0.2s;
         }
 
-        h3 { line-height: 1.4; margin-bottom: 20px; }
+        .main-btn:hover { opacity: 0.9; }
+
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
     </style>
 </head>
 <body>
 
     <div id="logo-overlay">
-        <img src="../assets/innovine-logo.jpg" alt="Innovine Logo">
+        <img src="../assets/innovine-logo.jpg" alt="Innovine Solutions">
     </div>
 
     <div id="app-container" class="hidden">
         <div id="intro-screen">
-            <h2 style="margin-top:0">Math Challenge: Addition</h2>
-            <p>Grade 3 | 12 Questions</p>
-            <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: left; font-size: 0.9rem;">
-                • 60 seconds per question<br>
-                • 2 attempts per question<br>
-                • Explanations provided after errors
-            </div>
-            <button class="main-btn" onclick="startQuiz()">Start Quiz</button>
+            <h2 style="color: var(--primary)">Addition – Grade 3 Mathematics</h2>
+            <p>Welcome to the Innovine Learning Challenge!</p>
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+            <button class="main-btn" onclick="startQuiz()">Start Activity</button>
         </div>
 
         <div id="quiz-screen" class="hidden">
-            <div class="header-meta">
-                <div class="score-box">Score: <span id="current-score">0</span></div>
-                <div id="timer" class="timer-box">60s</div>
+            <div class="header-info">
+                <div style="font-weight: bold">Score: <span id="current-score">0</span></div>
+                <div id="timer">60s</div>
             </div>
             <div class="progress-bar"><div id="progress-fill"></div></div>
-            
-            <h3 id="question-text"></h3>
+            <h3 id="question-text" style="text-align: left"></h3>
             <div id="options-container"></div>
-            
             <div id="feedback" class="explanation hidden"></div>
-            <button id="next-btn" class="main-btn hidden" onclick="nextQuestion()">Next Question</button>
+            <button id="next-btn" class="main-btn hidden" onclick="nextQuestion()" style="margin-top: 20px; width: 100%;">Next</button>
         </div>
 
         <div id="result-screen" class="hidden">
-            <h2>Challenge Complete!</h2>
-            <div style="font-size: 4rem; font-weight: 800; color: var(--primary); margin: 20px 0;" id="final-score">0</div>
-            <p id="result-message" style="font-weight: 500; margin-bottom: 30px;"></p>
-            <button class="main-btn" onclick="location.reload()">Try Again</button>
+            <h2 style="color: var(--primary)">Activity Completed!</h2>
+            <div style="font-size: 3.5rem; font-weight: 800; color: var(--accent);" id="final-score">0/12</div>
+            <p id="result-message" style="margin-bottom: 30px;"></p>
+            <button class="main-btn" onclick="location.reload()">Restart</button>
         </div>
     </div>
 
@@ -194,18 +165,18 @@ Here is your updated, ready-to-use **index.html**:
 
     <script>
         const questions = [
-            { q: "Riya has 125 stickers. She wants 150. She gets 23 more. Does she reach her goal?", a: ["Yes, she has more than 150", "Yes, she has exactly 150", "No, she has less than 150", "Cannot be found"], c: 2, e: "125 + 23 = 148. Since 148 is less than 150, she hasn't reached her goal yet." },
-            { q: "A teacher has 132 books. She buys some more and now has 150 books. How many books did she buy?", a: ["12", "18", "20", "28"], c: 1, e: "To find the missing part: 150 - 132 = 18." },
-            { q: "A shop sold 210 notebooks in the morning. By afternoon, total sales became 255. How many were sold in the afternoon?", a: ["35", "40", "45", "50"], c: 2, e: "The increase from 210 to 255 is 45 (255 - 210 = 45)." },
-            { q: "A shop sold 120 pens and 80 pencils. How many more pens than pencils were sold?", a: ["20", "30", "40", "50"], c: 2, e: "120 - 80 = 40. There are 40 extra pens." },
-            { q: "Class A collected 145 books and Class B collected 155 books. Which statement is correct?", a: ["Class A collected more books", "Class B collected 10 more books", "Both collected equal books", "Class B collected 20 more books"], c: 1, e: "155 is 10 more than 145." },
-            { q: "Aarav solved: 120 + 25 = 135. What mistake did he make?", a: ["Added ones incorrectly", "Added tens incorrectly", "Ignored tens completely", "No mistake"], c: 1, e: "120 + 25 should be 145. He likely added 2 tens + 2 tens incorrectly as 3 tens." },
-            { q: "Meera solved: 145 + 32 = 167. Which is correct?", a: ["Ones are added wrongly", "Tens are added wrongly", "Carry is missing", "Answer is correct"], c: 1, e: "145 + 32 = 177. She wrote 6 instead of 7 in the tens place." },
-            { q: "Rohan solved: 230 + 40 = 240. Why is this wrong?", a: ["Tens were not added correctly", "Ones were added wrongly", "Hundreds were added twice", "No mistake"], c: 0, e: "3 tens + 4 tens = 7 tens. The answer should be 270." },
-            { q: "Assertion: 40 + 30 = 70. Reason: We add tens to tens.", a: ["Both are correct and reason explains assertion", "Both are correct but reason does not explain", "Assertion is correct, reason is wrong", "Both are wrong"], c: 0, e: "Place value addition means adding digits in the same column." },
-            { q: "Assertion: 125 + 25 = 150. Reason: Adding 25 increases the number by 25.", a: ["Both are correct and reason explains assertion", "Both are correct but reason does not explain", "Assertion is correct, reason is wrong", "Both are wrong"], c: 0, e: "Addition represents an increase by the value of the second number." },
-            { q: "A school needs 300 books. They got 145 on Day 1 and 155 on Day 2. If they donate 20, will they have enough?", a: ["Yes, exactly enough", "Yes, more than enough", "No, less than needed", "Cannot be found"], c: 2, e: "145 + 155 = 300. If they give 20 away, they only have 280 left, which is not enough." },
-            { q: "Riya has 135 books, Ameya has 145, and library had 120. How many full groups of 100 can they make?", a: ["3", "4", "5", "6"], c: 1, e: "Total: 135 + 145 + 120 = 400. 400 makes exactly 4 groups of 100." }
+            { q: "Riya has 125 stickers. She wants 150 stickers. She gets 23 more. Does she reach her goal?", a: ["Yes, she has more than 150", "Yes, she has exactly 150", "No, she has less than 150", "Cannot be found"], c: 2, e: "125 + 23 = 148. She still needs 2 more to reach 150!" },
+            { q: "A teacher has 132 books. She buys some more and now has 150 books. How many books did she buy?", a: ["12", "18", "20", "28"], c: 1, e: "150 minus 132 equals 18 books bought." },
+            { q: "A shop sold 210 notebooks in the morning. By afternoon, total sales became 255. How many notebooks were sold in the afternoon?", a: ["35", "40", "45", "50"], c: 2, e: "255 total - 210 morning = 45 notebooks in the afternoon." },
+            { q: "A shop sold 120 pens and 80 pencils. How many more pens than pencils were sold?", a: ["20", "30", "40", "50"], c: 2, e: "120 - 80 = 40. There were 40 extra pens." },
+            { q: "Class A collected 145 books and Class B collected 155 books. Which statement is correct?", a: ["Class A collected more books", "Class B collected 10 more books", "Both collected equal books", "Class B collected 20 more books"], c: 1, e: "155 is 10 more than 145 (155 - 145 = 10)." },
+            { q: "Aarav solved: 120 + 25 = 135. What mistake did he make?", a: ["Added ones incorrectly", "Added tens incorrectly", "Ignored tens completely", "No mistake"], c: 1, e: "120 + 25 is 145. He likely added 2 + 1 incorrectly in the tens place." },
+            { q: "Meera solved: 145 + 32 = 167. Which is correct?", a: ["Ones are added wrongly", "Tens are added wrongly", "Carry is missing", "Answer is correct"], c: 1, e: "145 + 32 = 177. The tens digit should be 7 (4+3)." },
+            { q: "Rohan solved: 230 + 40 = 240. Why is this wrong?", a: ["Tens were not added correctly", "Ones were added wrongly", "Hundreds were added twice", "No mistake"], c: 0, e: "230 + 40 is 270. He only added 10 instead of 40." },
+            { q: "Assertion: 40 + 30 = 70 | Reason: We add tens to tens.", a: ["Both are correct and reason explains assertion", "Both are correct but reason does not explain", "Assertion is correct, reason is wrong", "Both are wrong"], c: 0, e: "We always add digits of the same place value together." },
+            { q: "Assertion: 125 + 25 = 150 | Reason: Adding 25 increases the number by 25", a: ["Both are correct and reason explains assertion", "Both are correct but reason does not explain", "Assertion is correct, reason is wrong", "Both are wrong"], c: 0, e: "Addition literally means increasing a total by the added amount." },
+            { q: "A school needs 300 books. They got 145 on Day 1 and 155 on Day 2. They donate 20 books. Do they have enough?", a: ["Yes, exactly enough", "Yes, more than enough", "No, less than needed", "Cannot be found"], c: 2, e: "145+155=300, but 300 - 20 = 280. They are now 20 books short!" },
+            { q: "Riya (135), Ameya (145), and Library (120) combined their books. How many groups of 100 can they make?", a: ["3", "4", "5", "6"], c: 1, e: "135 + 145 + 120 = 400. That makes 4 full hundreds." }
         ];
 
         let currentQ = 0;
@@ -235,7 +206,7 @@ Here is your updated, ready-to-use **index.html**:
             document.getElementById('next-btn').classList.add('hidden');
             
             const qData = questions[currentQ];
-            document.getElementById('question-text').innerText = qData.q;
+            document.getElementById('question-text').innerText = (currentQ + 1) + ". " + qData.q;
             
             const container = document.getElementById('options-container');
             container.innerHTML = '';
@@ -266,81 +237,57 @@ Here is your updated, ready-to-use **index.html**:
 
         function checkAnswer(index, btn) {
             const correctIdx = questions[currentQ].c;
-            
             if (index === correctIdx) {
                 btn.classList.add('correct');
                 playSound('snd-correct');
                 if (attempts === 0) score++;
                 document.getElementById('current-score').innerText = score;
-                lockOptions();
-                endQuestion();
+                lockAndFinish();
             } else {
                 attempts++;
                 btn.classList.add('wrong');
                 btn.disabled = true;
                 playSound('snd-wrong');
-                
-                if (attempts >= 2) {
-                    revealCorrect();
-                }
+                if (attempts >= 2) revealCorrect();
             }
         }
 
         function revealCorrect() {
-            lockOptions();
+            lockAndFinish();
             const btns = document.querySelectorAll('.option-btn');
             btns[questions[currentQ].c].classList.add('correct');
-            
             const fb = document.getElementById('feedback');
-            fb.innerText = "Explanation: " + questions[currentQ].e;
+            fb.innerText = "Hint: " + questions[currentQ].e;
             fb.classList.remove('hidden');
-            endQuestion();
         }
 
-        function lockOptions() {
+        function lockAndFinish() {
             clearInterval(timerInterval);
-            const btns = document.querySelectorAll('.option-btn');
-            btns.forEach(b => b.disabled = true);
-        }
-
-        function endQuestion() {
+            document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
             document.getElementById('next-btn').classList.remove('hidden');
         }
 
         function nextQuestion() {
             currentQ++;
-            if (currentQ < questions.length) {
-                loadQuestion();
-            } else {
-                showResults();
-            }
+            if (currentQ < questions.length) loadQuestion();
+            else showResults();
         }
 
         function updateProgress() {
-            const percent = ((currentQ) / questions.length) * 100;
-            document.getElementById('progress-fill').style.width = percent + "%";
+            document.getElementById('progress-fill').style.width = ((currentQ) / questions.length * 100) + "%";
         }
 
         function playSound(id) {
-            const sound = document.getElementById(id);
-            if(sound) {
-                sound.currentTime = 0;
-                sound.play().catch(() => {});
-            }
+            const s = document.getElementById(id);
+            if(s) { s.currentTime = 0; s.play().catch(e => {}); }
         }
 
         function showResults() {
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
             document.getElementById('final-score').innerText = score + " / " + questions.length;
-            
-            let msg = "";
-            if (score >= 10) msg = "Excellent! You're an addition pro!";
-            else if (score >= 7) msg = "Good job! A little more practice and you'll be perfect.";
-            else msg = "Keep practicing! Addition is a superpower you can master.";
-            document.getElementById('result-message').innerText = msg;
+            document.getElementById('result-message').innerText = score > 8 ? "Excellent! You are an Addition Champion!" : "Good effort! Keep practicing to get even stronger!";
         }
     </script>
 </body>
 </html>
-```
