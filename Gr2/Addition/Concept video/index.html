@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3-Digit Addition Fun Lesson</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+height:100svh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:6px;
+overflow:hidden;
+background:linear-gradient(135deg,#fef6ff,#fff9f0,#f0fff7,#f0f7ff);
+background-size:300% 300%;
+animation:pastelMove 16s ease infinite;
+}
+
+@keyframes pastelMove{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+.shape{
+position:fixed;
+border-radius:50%;
+opacity:.45;
+animation:float 12s ease-in-out infinite;
+z-index:1;
+}
+
+.s1{width:120px;height:120px;background:#ffe4ec;top:7%;left:7%}
+.s2{width:95px;height:95px;background:#dff6ff;bottom:10%;left:10%;animation-delay:3s}
+.s3{width:135px;height:135px;background:#e7ffe7;top:13%;right:7%;animation-delay:5s}
+.s4{width:105px;height:105px;background:#fff2cc;bottom:11%;right:13%;animation-delay:2s}
+
+@keyframes float{
+0%{transform:translateY(0)}
+50%{transform:translateY(-22px)}
+100%{transform:translateY(0)}
+}
+
+#logo{
+position:fixed;
+inset:0;
+background:#fffafc;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:50;
+}
+
+#logo img{width:160px}
+
+#app{
+display:none;
+width:100%;
+max-width:950px;
+height:98svh;
+background:rgba(255,255,255,.62);
+backdrop-filter:blur(8px);
+border-radius:18px;
+overflow:hidden;
+box-shadow:0 10px 28px rgba(0,0,0,.12);
+position:relative;
+z-index:2;
+border:2px solid rgba(255,255,255,.7);
+}
+
+header{
+background:linear-gradient(135deg,#ffd6e0,#e0f7ff);
+color:#444;
+text-align:center;
+padding:8px;
+}
+
+header h1{
+margin:0;
+font-size:22px;
+}
+
+header p{
+margin:3px 0;
+font-size:14px;
+}
+
+.controls button{
+padding:9px 14px;
+font-size:14px;
+margin:3px;
+}
+
+main{
+height:calc(100% - 98px);
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+padding:8px;
+overflow:auto;
+}
+
+.card{
+background:rgba(255,255,255,.78);
+border-radius:14px;
+padding:10px;
+display:flex;
+flex-direction:column;
+justify-content:flex-start;
+border:2px solid rgba(255,255,255,.85);
+box-shadow:0 6px 14px rgba(0,0,0,.06);
+}
+
+.startCard{
+justify-content:center;
+align-items:center;
+text-align:center;
+gap:10px;
+background:rgba(255,250,252,.86);
+}
+
+.bigStart{
+font-size:20px;
+padding:15px 28px;
+border-radius:18px;
+background:#ffb5c5;
+color:#333;
+}
+
+#progress{
+font-size:13px;
+font-weight:bold;
+color:#7a5c87;
+margin-bottom:5px;
+}
+
+#title{
+font-size:20px;
+margin:0 0 6px;
+color:#5e4b73;
+}
+
+#text{
+font-size:15px;
+line-height:1.3;
+margin:0;
+color:#4c4c5c;
+}
+
+.reward{
+margin-top:8px;
+font-size:15px;
+font-weight:bold;
+color:#4f9b72;
+min-height:20px;
+}
+
+#qbox{
+margin-top:8px;
+padding:8px;
+background:#fff7dc;
+border-radius:12px;
+border:2px solid #ffe6a7;
+}
+
+#qbox p{
+font-size:16px;
+font-weight:bold;
+margin:4px 0;
+}
+
+input{
+padding:8px;
+font-size:16px;
+width:120px;
+border-radius:8px;
+border:1px solid #d8cfd8;
+text-align:center;
+background:#fff;
+}
+
+button{
+border:none;
+background:#ffb5c5;
+color:#333;
+padding:8px 12px;
+border-radius:10px;
+font-size:13px;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+background:#ffc9d6;
+}
+
+.board{
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+background:rgba(240,255,247,.82);
+}
+
+.columns,.row,.carry{
+display:grid;
+grid-template-columns:40px 40px 40px 40px;
+gap:6px;
+text-align:center;
+align-items:center;
+}
+
+.columns div{
+font-size:13px;
+font-weight:bold;
+color:#6d6b8d;
+}
+
+.row div{
+font-size:22px;
+font-weight:bold;
+min-height:34px;
+display:flex;
+justify-content:center;
+align-items:center;
+color:#343445;
+}
+
+.carry div{
+font-size:15px;
+font-weight:bold;
+color:#cc6b6b;
+min-height:20px;
+}
+
+.line{
+width:170px;
+height:3px;
+background:#6d6b8d;
+margin:6px 0;
+border-radius:20px;
+}
+
+.operator{color:#e58a5c}
+
+.focus{
+background:#fff2a8;
+border-radius:8px;
+box-shadow:0 0 0 4px rgba(255,235,150,.42);
+animation:pulse .8s infinite alternate;
+}
+
+@keyframes pulse{
+from{transform:scale(1)}
+to{transform:scale(1.07)}
+}
+
+.digit{
+opacity:0;
+transform:scale(.8);
+animation:writeDigit .7s ease forwards;
+}
+
+@keyframes writeDigit{
+0%{opacity:0;transform:translateY(-8px) scale(.7);filter:blur(2px)}
+60%{opacity:1;transform:translateY(2px) scale(1.1);filter:blur(0)}
+100%{opacity:1;transform:translateY(0) scale(1)}
+}
+
+.correct{color:#4f9b72;font-weight:bold}
+.wrong{color:#c25f5f;font-weight:bold}
+
+.star{
+position:fixed;
+width:14px;
+height:14px;
+background:#ffd86b;
+clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+animation:fall 1.5s linear forwards;
+z-index:99;
+}
+
+@keyframes fall{
+to{transform:translateY(100vh) rotate(360deg);opacity:0}
+}
+
+@media(max-width:700px){
+main{
+grid-template-columns:1fr;
+}
+
+header h1{font-size:20px}
+
+#title{font-size:18px}
+#text{font-size:14px}
+
+.row div{font-size:21px}
+
+main{
+height:calc(100% - 105px);
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="shape s1"></div>
+<div class="shape s2"></div>
+<div class="shape s3"></div>
+<div class="shape s4"></div>
+
+<div id="logo">
+<img src="assets/innovine-logo.png" alt="Innovine Logo">
+<h3>Maths Lesson</h3>
+</div>
+
+<div id="app">
+
+<header>
+<h1>3-Digit Addition</h1>
+<p>With and Without Regrouping</p>
+<div class="controls">
+<button onclick="start()">▶ Start Lesson</button>
+<button onclick="toggleVoice()">Voice On / Off</button>
+</div>
+</header>
+
+<main>
+
+<div class="card startCard" id="startCard">
+<h2>Ready to begin?</h2>
+<p>Tap the button below to start the voice lesson.</p>
+<button class="bigStart" onclick="start()">▶ Start Lesson</button>
+</div>
+
+<div class="card" id="lessonCard" style="display:none;">
+<div id="progress"></div>
+<h2 id="title">Ready</h2>
+<p id="text">Click Start Lesson</p>
+<div class="reward" id="reward"></div>
+
+<div id="qbox" style="display:none;">
+<p id="q"></p>
+<input id="ans" type="number" placeholder="Answer">
+<button onclick="check()">Submit</button>
+<p id="feedback"></p>
+</div>
+</div>
+
+<div class="card board">
+<div class="carry" id="carryRow"></div>
+<div class="columns">
+<div></div><div>H</div><div>T</div><div>O</div>
+</div>
+<div id="sum"></div>
+</div>
+
+</main>
+</div>
+
+<script>
+let i=0;
+let voiceOn=true;
+let current=null;
+let timer=null;
+
+const steps=[
+{t:"Start",d:"We will learn 3 digit addition. Get ready to spot hundreds, tens, and ones.",sum:null,reward:"Number eyes on!"},
+{t:"Place Value",d:"A 3 digit number has hundreds, tens, and ones. Each digit has its own place.",sum:null,reward:"Nice focus!"},
+{t:"Example",d:"We will add 234 and 125.",sum:[234,125],reward:"The numbers are lined up."},
+
+{t:"Predict",d:"Pause and predict. Look at the ones column. What do you think 4 plus 5 will be?",sum:[234,125],highlight:"O",pause:1400,reward:"Think first, then check."},
+{t:"Ones",d:"4 plus 5 equals 9. We write 9 in the ones place.",sum:[234,125,"__9"],f:3,highlight:"O",reward:"Good start!"},
+
+{t:"Predict",d:"Now predict the tens. What is 3 plus 2?",sum:[234,125,"__9"],highlight:"T",pause:1400,reward:"You are tracking the columns."},
+{t:"Tens",d:"3 plus 2 equals 5. We write 5 in the tens place.",sum:[234,125,"_59"],f:2,highlight:"T",reward:"Great column work!"},
+
+{t:"Predict",d:"Now the hundreds. What is 2 plus 1?",sum:[234,125,"_59"],highlight:"H",pause:1400,reward:"Almost there."},
+{t:"Hundreds",d:"2 plus 1 equals 3. The answer is 359.",sum:[234,125,"359"],f:1,highlight:"H",reward:"First example complete!"},
+
+{t:"Your Turn",d:"Now you try one without regrouping. Add ones, then tens, then hundreds. Take your time.",sum:[342,216],q:"342 + 216",a:558},
+
+{t:"Regrouping",d:"Now let us learn regrouping. If a column makes 10 or more, we carry to the next column.",sum:null,reward:"New skill unlocked!"},
+{t:"Example",d:"We will add 268 and 157.",sum:[268,157],reward:"Line them up carefully."},
+
+{t:"Predict",d:"Look at the ones column. 8 plus 7 is more than 9. Get ready to carry.",sum:[268,157],highlight:"O",pause:1500,reward:"Careful thinking moment."},
+{t:"Ones",d:"8 plus 7 equals 15. We write 5 and carry 1.",sum:[268,157,"__5"],carry:["","","1",""],f:3,highlight:"O",reward:"Carry spotted!"},
+
+{t:"Predict",d:"Now the tens column. Remember the carried 1. What happens to 6 plus 5 plus 1?",sum:[268,157,"__5"],carry:["","","1",""],highlight:"T",pause:1700,reward:"Do not forget the carry."},
+{t:"Tens",d:"6 plus 5 plus 1 equals 12. We write 2 and carry 1.",sum:[268,157,"_25"],carry:["","1","1",""],f:2,highlight:"T",reward:"Excellent carrying!"},
+
+{t:"Predict",d:"Final column. Look at the hundreds. What is 2 plus 1 plus the carried 1?",sum:[268,157,"_25"],carry:["","1","1",""],highlight:"H",pause:1700,reward:"Last column."},
+{t:"Hundreds",d:"2 plus 1 plus 1 equals 4. The answer is 425.",sum:[268,157,"425"],carry:["","1","1",""],f:1,highlight:"H",reward:"Regrouping example complete!"},
+
+{t:"Final Challenge",d:"This one has regrouping. Watch for the carry. Solve carefully.",sum:[376,248],q:"376 + 248",a:624},
+
+{t:"End",d:"Well done. You are someone who understands numbers. You can add 3 digit numbers with and without regrouping.",sum:null,reward:"Math confidence unlocked!"}
+];
+
+function formatForSpeech(text){
+return text.replace(/\d+/g,num=>num.split("").join(" "));
+}
+
+function sound(type){
+try{
+const ctx=new (window.AudioContext||window.webkitAudioContext)();
+const osc=ctx.createOscillator();
+const gain=ctx.createGain();
+osc.connect(gain);
+gain.connect(ctx.destination);
+osc.frequency.value=type==="correct"?720:type==="tick"?520:220;
+gain.gain.value=.05;
+osc.start();
+osc.stop(ctx.currentTime+.13);
+}catch(e){}
+}
+
+function speak(text,cb){
+clearTimeout(timer);
+speechSynthesis.cancel();
+
+if(!voiceOn){
+setTimeout(cb,2600);
+return;
+}
+
+let u=new SpeechSynthesisUtterance(formatForSpeech(text));
+u.rate=0.72;
+u.pitch=1;
+u.volume=1;
+u.lang="en-US";
+u.onend=()=>setTimeout(cb,1200);
+u.onerror=()=>setTimeout(cb,1500);
+speechSynthesis.speak(u);
+}
+
+function splitNum(num){
+if(!num)return["","",""];
+return String(num).padStart(3," ").split("");
+}
+
+function splitAns(ans){
+if(!ans)return["","",""];
+return String(ans).replace(/_/g," ").padStart(3," ").split("");
+}
+
+function draw(sum,f,carry=[]){
+let s=document.getElementById("sum");
+let cRow=document.getElementById("carryRow");
+s.innerHTML="";
+cRow.innerHTML="";
+
+let carryArr=carry.length?carry:["","","",""];
+carryArr.forEach((c,idx)=>{
+cRow.innerHTML+=`<div><span class="digit" style="animation-delay:${idx*.15}s">${c}</span></div>`;
+});
+
+if(!sum){
+s.innerHTML="";
+return;
+}
+
+let a=splitNum(sum[0]);
+let b=splitNum(sum[1]);
+let c=splitAns(sum[2]);
+
+function cell(x,i,delay=0){
+if(x===" "||x==="")return `<div></div>`;
+return `<div class="${f==i?'focus':''}"><span class="digit" style="animation-delay:${delay}s">${x}</span></div>`;
+}
+
+s.innerHTML=`
+<div class="row"><div></div>${cell(a[0],1,0)}${cell(a[1],2,.15)}${cell(a[2],3,.3)}</div>
+<div class="row"><div class="operator">+</div>${cell(b[0],1,.45)}${cell(b[1],2,.6)}${cell(b[2],3,.75)}</div>
+<div class="line"></div>
+<div class="row"><div></div>${cell(c[0],1,.9)}${cell(c[1],2,1.05)}${cell(c[2],3,1.2)}</div>
+`;
+sound("tick");
+}
+
+function highlightColumn(place){
+document.querySelectorAll(".row div").forEach(cell=>cell.classList.remove("focus"));
+if(!place)return;
+
+let index=place==="H"?1:place==="T"?2:3;
+document.querySelectorAll(".row").forEach(row=>{
+let cells=row.querySelectorAll("div");
+if(cells[index])cells[index].classList.add("focus");
+});
+}
+
+function spotlightSweep(finalPlace){
+highlightColumn("H");
+setTimeout(()=>highlightColumn("T"),350);
+setTimeout(()=>highlightColumn("O"),700);
+setTimeout(()=>highlightColumn(finalPlace),1050);
+}
+
+function play(){
+if(i>=steps.length)return;
+
+let s=steps[i];
+
+document.getElementById("startCard").style.display="none";
+document.getElementById("lessonCard").style.display="flex";
+document.getElementById("progress").innerText=`Step ${i+1} of ${steps.length}`;
+document.getElementById("title").innerText=s.t;
+document.getElementById("text").innerText=s.d;
+document.getElementById("reward").innerText=s.reward||"";
+document.getElementById("feedback").innerText="";
+document.getElementById("ans").value="";
+
+draw(s.sum,s.f,s.carry);
+
+if(s.highlight){
+spotlightSweep(s.highlight);
+}
+
+if(s.q){
+current=s;
+document.getElementById("qbox").style.display="block";
+document.getElementById("q").innerText=s.q;
+speak(s.d,()=>{});
+return;
+}
+
+document.getElementById("qbox").style.display="none";
+
+speak(s.d,()=>{
+if(s.pause){
+timer=setTimeout(()=>{i++;play();},s.pause);
+}else{
+i++;
+play();
+}
+});
+}
+
+function check(){
+let val=Number(document.getElementById("ans").value);
+let feedback=document.getElementById("feedback");
+
+if(document.getElementById("ans").value.trim()===""){
+feedback.innerText="Type your answer first.";
+feedback.className="wrong";
+return;
+}
+
+if(val===current.a){
+feedback.innerText="Correct! The lesson will continue.";
+feedback.className="correct";
+sound("correct");
+confetti();
+i++;
+timer=setTimeout(play,1600);
+}else{
+feedback.innerText="Try again. Check the H, T, and O columns.";
+feedback.className="wrong";
+sound("wrong");
+}
+}
+
+function confetti(){
+for(let k=0;k<25;k++){
+let d=document.createElement("div");
+d.className="star";
+d.style.left=Math.random()*100+"vw";
+d.style.top="-20px";
+d.style.animationDelay=Math.random()*.4+"s";
+document.body.appendChild(d);
+setTimeout(()=>d.remove(),1600);
+}
+}
+
+function start(){
+speechSynthesis.cancel();
+clearTimeout(timer);
+i=0;
+play();
+}
+
+function toggleVoice(){
+voiceOn=!voiceOn;
+speechSynthesis.cancel();
+}
+
+document.getElementById("ans").addEventListener("keydown",e=>{
+if(e.key==="Enter")check();
+});
+
+setTimeout(()=>{
+document.getElementById("logo").style.display="none";
+document.getElementById("app").style.display="block";
+},5000);
+</script>
+
+</body>
+</html>
