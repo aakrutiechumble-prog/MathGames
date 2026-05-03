@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integers Video Lesson</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Arial,sans-serif;
+height:100svh;
+padding:6px;
+display:flex;
+align-items:center;
+justify-content:center;
+overflow:hidden;
+background:linear-gradient(135deg,#fff4f8,#fffaf0,#effff7,#f3f0ff);
+background-size:300% 300%;
+animation:bgMove 16s ease infinite;
+color:#40394a;
+}
+
+@keyframes bgMove{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+.shape{
+position:fixed;
+border-radius:50%;
+opacity:.45;
+z-index:1;
+animation:float 12s ease-in-out infinite;
+}
+
+.s1{width:120px;height:120px;background:#ffe4ec;top:7%;left:7%}
+.s2{width:95px;height:95px;background:#dff6ff;bottom:10%;left:10%;animation-delay:3s}
+.s3{width:135px;height:135px;background:#e7ffe7;top:13%;right:7%;animation-delay:5s}
+.s4{width:105px;height:105px;background:#fff2cc;bottom:11%;right:13%;animation-delay:2s}
+
+@keyframes float{
+0%{transform:translateY(0)}
+50%{transform:translateY(-22px)}
+100%{transform:translateY(0)}
+}
+
+#logo{
+position:fixed;
+inset:0;
+background:#fffafc;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+z-index:50;
+}
+
+#logo img{width:160px;max-width:70%}
+
+#app{
+display:none;
+width:100%;
+max-width:960px;
+height:98svh;
+background:rgba(255,255,255,.64);
+backdrop-filter:blur(8px);
+border:2px solid rgba(255,255,255,.7);
+border-radius:18px;
+box-shadow:0 10px 28px rgba(0,0,0,.12);
+overflow:hidden;
+position:relative;
+z-index:2;
+}
+
+header{
+background:linear-gradient(135deg,#ffd6e0,#e0f7ff);
+text-align:center;
+padding:8px;
+color:#444;
+}
+
+header h1{
+margin:0;
+font-size:22px;
+}
+
+header p{
+margin:3px 0;
+font-size:14px;
+}
+
+.controls button{
+padding:9px 14px;
+font-size:14px;
+margin:3px;
+}
+
+main{
+height:calc(100% - 98px);
+display:grid;
+grid-template-columns:1fr 1.05fr;
+gap:8px;
+padding:8px;
+overflow:auto;
+}
+
+.card{
+background:rgba(255,255,255,.8);
+border:2px solid rgba(255,255,255,.9);
+border-radius:14px;
+padding:10px;
+box-shadow:0 6px 14px rgba(0,0,0,.06);
+}
+
+.startCard{
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+gap:10px;
+}
+
+.bigStart{
+font-size:20px;
+padding:15px 28px;
+border-radius:18px;
+}
+
+#lessonCard{
+display:none;
+flex-direction:column;
+}
+
+#progress{
+font-size:13px;
+font-weight:bold;
+color:#7a5c87;
+margin-bottom:5px;
+}
+
+#title{
+font-size:20px;
+margin:0 0 6px;
+color:#5e4b73;
+}
+
+#text{
+font-size:15px;
+line-height:1.35;
+margin:0;
+color:#4c4c5c;
+}
+
+.visual{
+display:flex;
+justify-content:center;
+align-items:center;
+background:rgba(240,255,247,.82);
+min-height:280px;
+overflow:auto;
+position:relative;
+padding:12px;
+}
+
+#visualArea{
+width:100%;
+min-height:260px;
+display:flex;
+justify-content:center;
+align-items:center;
+overflow:auto;
+}
+
+button{
+border:none;
+background:#ffb5c5;
+color:#333;
+padding:8px 12px;
+border-radius:10px;
+font-size:13px;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{background:#ffc9d6}
+
+#qbox{
+display:none;
+margin-top:8px;
+padding:8px;
+background:#fff7dc;
+border:2px solid #ffe6a7;
+border-radius:12px;
+}
+
+#qbox p{
+font-size:16px;
+font-weight:bold;
+margin:4px 0;
+}
+
+.optionBtn{
+display:block;
+width:100%;
+margin:6px 0;
+font-size:15px;
+}
+
+.correct{color:#4f9b72;font-weight:bold}
+.wrong{color:#c25f5f;font-weight:bold}
+
+.thermoWrap{
+width:100%;
+min-height:240px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:24px;
+}
+
+.thermoGraphic{
+width:90px;
+height:230px;
+position:relative;
+flex-shrink:0;
+}
+
+.thermoTube{
+position:absolute;
+left:34px;
+top:10px;
+width:24px;
+height:160px;
+border-radius:20px;
+background:#ffffff;
+border:4px solid #8b7a99;
+overflow:hidden;
+box-shadow:inset 0 0 8px rgba(0,0,0,.08);
+}
+
+.mercury{
+position:absolute;
+bottom:0;
+left:0;
+width:100%;
+height:60%;
+background:linear-gradient(180deg,#ff9db4,#ff5f8f);
+border-radius:20px 20px 0 0;
+transition:height 1.4s ease;
+}
+
+.thermoBulb{
+position:absolute;
+left:20px;
+bottom:20px;
+width:52px;
+height:52px;
+border-radius:50%;
+background:radial-gradient(circle at 35% 30%,#ffc3d1,#ff5f8f);
+border:4px solid #8b7a99;
+box-shadow:0 6px 14px rgba(255,95,143,.28);
+}
+
+.tempText{
+font-size:42px;
+font-weight:bold;
+color:#5e4b73;
+background:#fff7dc;
+padding:10px 16px;
+border-radius:18px;
+border:2px solid #ffe6a7;
+box-shadow:0 6px 14px rgba(0,0,0,.06);
+white-space:nowrap;
+}
+
+.numberLine{
+width:100%;
+min-width:320px;
+max-width:440px;
+height:150px;
+position:relative;
+margin:0 auto;
+background:rgba(255,255,255,.75);
+border-radius:22px;
+padding:12px;
+border:2px solid rgba(255,255,255,.9);
+overflow:visible;
+}
+
+.axis{
+position:absolute;
+top:72px;
+left:8%;
+right:8%;
+height:5px;
+background:linear-gradient(90deg,#ffb5c5,#c7e9ff,#c9f2c9);
+border-radius:10px;
+}
+
+.tick{
+position:absolute;
+top:61px;
+width:3px;
+height:24px;
+background:#6d6b8d;
+border-radius:10px;
+}
+
+.tick span{
+position:absolute;
+top:28px;
+left:50%;
+transform:translateX(-50%);
+font-weight:bold;
+font-size:11px;
+color:#4c4c5c;
+}
+
+.dot{
+position:absolute;
+top:58px;
+width:24px;
+height:24px;
+border-radius:50%;
+background:#ffb5c5;
+border:3px solid #fff;
+box-shadow:0 0 0 4px rgba(255,181,197,.3);
+transform:translateX(-50%) scale(0);
+animation:pop .65s forwards;
+}
+
+@keyframes pop{
+to{transform:translateX(-50%) scale(1)}
+}
+
+.sideLabel{
+position:absolute;
+top:15px;
+left:0;
+right:0;
+text-align:center;
+font-weight:bold;
+font-size:18px;
+color:#5e4b73;
+}
+
+.integerSet{
+width:100%;
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+justify-content:center;
+align-items:center;
+font-size:22px;
+font-weight:bold;
+padding:10px;
+}
+
+.numPill{
+min-width:54px;
+text-align:center;
+background:#fff7dc;
+padding:12px 15px;
+border-radius:18px;
+border:2px solid #ffe6a7;
+box-shadow:0 6px 14px rgba(0,0,0,.07);
+animation:writeIn .75s ease forwards;
+opacity:0;
+}
+
+.positive{background:#e7ffe7;border-color:#c9f2c9}
+.negative{background:#ffe4ec;border-color:#ffc9d6}
+.zero{background:#e0f7ff;border-color:#b8ecff}
+
+@keyframes writeIn{
+0%{opacity:0;transform:translateY(-8px) scale(.8)}
+100%{opacity:1;transform:translateY(0) scale(1)}
+}
+
+.lifeGrid{
+display:grid;
+grid-template-columns:1fr;
+gap:10px;
+width:90%;
+max-width:430px;
+}
+
+.lifeItem{
+background:rgba(255,255,255,.92);
+border-radius:18px;
+padding:14px;
+font-size:18px;
+font-weight:bold;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 8px 18px rgba(0,0,0,.08);
+border:2px solid rgba(255,255,255,.9);
+animation:writeIn .75s ease forwards;
+}
+
+.star{
+position:fixed;
+width:14px;
+height:14px;
+background:#ffd86b;
+clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+animation:fall 1.5s linear forwards;
+z-index:99;
+}
+
+@keyframes fall{
+to{transform:translateY(100vh) rotate(360deg);opacity:0}
+}
+
+@media(max-width:700px){
+main{
+grid-template-columns:1fr;
+height:calc(100% - 105px);
+}
+
+.visual{
+min-height:260px;
+overflow:auto;
+}
+
+#visualArea{
+min-height:240px;
+}
+
+header h1{font-size:20px}
+#title{font-size:18px}
+#text{font-size:14px}
+
+.numberLine{
+min-width:300px;
+max-width:330px;
+height:145px;
+}
+
+.tick span{
+font-size:10px;
+}
+
+.dot{
+width:22px;
+height:22px;
+}
+
+.integerSet{
+font-size:20px;
+gap:8px;
+}
+
+.numPill{
+min-width:48px;
+padding:10px 12px;
+}
+
+.thermoWrap{
+gap:14px;
+}
+
+.thermoGraphic{
+transform:scale(.85);
+}
+
+.tempText{
+font-size:28px;
+}
+
+.lifeItem{
+font-size:15px;
+padding:10px;
+}
+
+.sideLabel{
+font-size:16px;
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="shape s1"></div>
+<div class="shape s2"></div>
+<div class="shape s3"></div>
+<div class="shape s4"></div>
+
+<div id="logo">
+<img src="assets/innovine-logo.png" alt="Innovine Logo">
+<h3>Maths Lesson</h3>
+</div>
+
+<div id="app">
+
+<header>
+<h1>Integers</h1>
+<p>Positive Numbers, Negative Numbers and Zero</p>
+<div class="controls">
+<button onclick="start()">▶ Start Lesson</button>
+<button onclick="toggleVoice()">Voice On / Off</button>
+</div>
+</header>
+
+<main>
+
+<div class="card startCard" id="startCard">
+<h2>Ready to begin?</h2>
+<p>Tap the button below to start the voice lesson.</p>
+<button class="bigStart" onclick="start()">▶ Start Lesson</button>
+</div>
+
+<div class="card" id="lessonCard">
+<div id="progress"></div>
+<h2 id="title"></h2>
+<p id="text"></p>
+
+<div id="qbox">
+<p id="q"></p>
+<div id="options"></div>
+<p id="feedback"></p>
+</div>
+</div>
+
+<div class="card visual">
+<div id="visualArea"></div>
+</div>
+
+</main>
+</div>
+
+<script>
+let i=0;
+let voiceOn=true;
+let timer=null;
+let current=null;
+
+const steps=[
+{
+t:"A chilly question",
+d:"Imagine this. The temperature outside is 5 degrees. At night, it drops to 0. Then it goes below 0. How do we show numbers below 0?",
+visual:"thermo",
+temp:5
+},
+{
+t:"Below zero",
+d:"The thermometer can go below 0. This means we need numbers that are less than 0.",
+visual:"thermo",
+temp:-3
+},
+{
+t:"What we already know",
+d:"We know counting numbers like 1, 2, and 3. We also know whole numbers like 0, 1, 2, and 3.",
+visual:"set",
+set:["0","1","2","3"]
+},
+{
+t:"Pause and think",
+d:"Can these numbers show temperatures below 0?",
+visual:"think",
+pause:1800
+},
+{
+t:"Negative numbers",
+d:"To show values below 0, we use negative numbers. They have a minus sign.",
+visual:"set",
+set:["-1","-2","-3"]
+},
+{
+t:"Integers",
+d:"When we combine positive numbers, negative numbers, and 0, we get integers.",
+visual:"set",
+set:["-3","-2","-1","0","1","2","3"]
+},
+{
+t:"Number line",
+d:"Let us understand integers using a number line.",
+visual:"line",
+dots:[]
+},
+{
+t:"Right of zero",
+d:"Numbers to the right of 0 are positive.",
+visual:"line",
+dots:[1,2,3],
+highlightText:"Positive side"
+},
+{
+t:"Left of zero",
+d:"Numbers to the left of 0 are negative.",
+visual:"line",
+dots:[-1,-2,-3],
+highlightText:"Negative side"
+},
+{
+t:"Real life use",
+d:"Integers are used in real life. Temperature can be minus 5 degrees. A bank balance can be minus 200 rupees. A basement floor can be minus 1.",
+visual:"life"
+},
+{
+t:"Compare integers",
+d:"Now let us compare numbers. Which is greater, -2 or -5?",
+visual:"line",
+dots:[-2,-5],
+pause:2200
+},
+{
+t:"Greater number",
+d:"On a number line, numbers on the right are greater. So, -2 is greater than -5.",
+visual:"line",
+dots:[-2,-5],
+highlight:-2
+},
+{
+t:"Your turn",
+d:"Try this yourself. Which is greater, 3 or -3?",
+visual:"line",
+dots:[3,-3],
+q:"Which is greater?",
+options:["3","-3"],
+a:"3"
+},
+{
+t:"Quick check",
+d:"One more. Which number is less, -4 or 1?",
+visual:"line",
+dots:[-4,1],
+q:"Which number is less?",
+options:["-4","1"],
+a:"-4"
+},
+{
+t:"Summary",
+d:"Let us recap. Integers include positive numbers, negative numbers, and 0. They help us represent real life situations. We can understand them using a number line.",
+visual:"set",
+set:["Negative","0","Positive"]
+},
+{
+t:"Well done",
+d:"Integers are the foundation for many topics in mathematics. Understand this well, and the next steps become easier.",
+visual:"finish"
+}
+];
+
+function formatForSpeech(text){
+return text.replace(/\d+/g,num=>num.split("").join(" "));
+}
+
+function speak(text,cb){
+clearTimeout(timer);
+speechSynthesis.cancel();
+
+if(!voiceOn){
+setTimeout(cb,2600);
+return;
+}
+
+let u=new SpeechSynthesisUtterance(formatForSpeech(text));
+u.rate=.74;
+u.pitch=1;
+u.volume=1;
+u.lang="en-US";
+u.onend=()=>setTimeout(cb,1200);
+u.onerror=()=>setTimeout(cb,1500);
+speechSynthesis.speak(u);
+}
+
+function sound(type){
+try{
+let ctx=new (window.AudioContext||window.webkitAudioContext)();
+let osc=ctx.createOscillator();
+let gain=ctx.createGain();
+osc.connect(gain);
+gain.connect(ctx.destination);
+osc.frequency.value=type==="correct"?720:type==="tick"?520:220;
+gain.gain.value=.05;
+osc.start();
+osc.stop(ctx.currentTime+.13);
+}catch(e){}
+}
+
+function renderVisual(s){
+let v=document.getElementById("visualArea");
+v.innerHTML="";
+
+if(s.visual==="thermo"){
+let height=s.temp>=0?62:24;
+v.innerHTML=`
+<div class="thermoWrap">
+  <div class="thermoGraphic">
+    <div class="thermoTube">
+      <div class="mercury" style="height:${height}%"></div>
+    </div>
+    <div class="thermoBulb"></div>
+  </div>
+  <div class="tempText">${s.temp}°C</div>
+</div>`;
+}
+
+if(s.visual==="set"){
+v.innerHTML=`<div class="integerSet">${
+(s.set||[]).map((n,idx)=>{
+let cls="numPill ";
+if(String(n).startsWith("-"))cls+="negative";
+else if(String(n)==="0")cls+="zero";
+else cls+="positive";
+return `<span class="${cls}" style="animation-delay:${idx*.15}s">${n}</span>`;
+}).join("")
+}</div>`;
+}
+
+if(s.visual==="think"){
+v.innerHTML=`<div class="integerSet">
+<span class="numPill zero">?</span>
+<span class="numPill">Below 0</span>
+</div>`;
+}
+
+if(s.visual==="line"){
+v.innerHTML=numberLine(s.dots||[],s.highlight,s.highlightText);
+}
+
+if(s.visual==="life"){
+v.innerHTML=`
+<div class="lifeGrid">
+<div class="lifeItem">🌡️ Temperature <span>-5°C</span></div>
+<div class="lifeItem">🏦 Bank balance <span>-₹200</span></div>
+<div class="lifeItem">🏢 Basement <span>-1</span></div>
+</div>`;
+}
+
+if(s.visual==="finish"){
+v.innerHTML=`<div class="integerSet">
+<span class="numPill negative">Negative</span>
+<span class="numPill zero">Zero</span>
+<span class="numPill positive">Positive</span>
+</div>`;
+}
+sound("tick");
+}
+
+function numberLine(dots=[],highlight=null,highlightText=""){
+let nums=[-5,-4,-3,-2,-1,0,1,2,3,4,5];
+let html=`<div class="numberLine"><div class="axis"></div>`;
+
+nums.forEach(n=>{
+let pos=mapNum(n);
+html+=`<div class="tick" style="left:${pos}%"><span>${n}</span></div>`;
+});
+
+dots.forEach((n,idx)=>{
+let pos=mapNum(n);
+let color=n===highlight?"#ffd86b":"#ffb5c5";
+html+=`<div class="dot" style="left:${pos}%;background:${color};animation-delay:${idx*.25}s"></div>`;
+});
+
+if(highlightText){
+html+=`<div class="sideLabel">${highlightText}</div>`;
+}
+
+html+=`</div>`;
+return html;
+}
+
+function mapNum(n){
+return 8+((n+5)/10)*84;
+}
+
+function play(){
+if(i>=steps.length)return;
+
+let s=steps[i];
+
+document.getElementById("startCard").style.display="none";
+document.getElementById("lessonCard").style.display="flex";
+document.getElementById("progress").innerText=`Step ${i+1} of ${steps.length}`;
+document.getElementById("title").innerText=s.t;
+document.getElementById("text").innerText=s.d;
+document.getElementById("feedback").innerText="";
+document.getElementById("options").innerHTML="";
+
+renderVisual(s);
+
+if(s.q){
+current=s;
+document.getElementById("qbox").style.display="block";
+document.getElementById("q").innerText=s.q;
+s.options.forEach(opt=>{
+let b=document.createElement("button");
+b.className="optionBtn";
+b.innerText=opt;
+b.onclick=()=>check(opt);
+document.getElementById("options").appendChild(b);
+});
+speak(s.d,()=>{});
+return;
+}
+
+document.getElementById("qbox").style.display="none";
+
+speak(s.d,()=>{
+if(s.pause){
+timer=setTimeout(()=>{i++;play();},s.pause);
+}else{
+i++;
+play();
+}
+});
+}
+
+function check(value){
+let feedback=document.getElementById("feedback");
+
+if(value===current.a){
+feedback.innerText="Correct! The lesson will continue.";
+feedback.className="correct";
+sound("correct");
+confetti();
+i++;
+timer=setTimeout(play,1500);
+}else{
+feedback.innerText="Try again. Use the number line.";
+feedback.className="wrong";
+sound("wrong");
+}
+}
+
+function confetti(){
+for(let k=0;k<25;k++){
+let d=document.createElement("div");
+d.className="star";
+d.style.left=Math.random()*100+"vw";
+d.style.top="-20px";
+d.style.animationDelay=Math.random()*.4+"s";
+document.body.appendChild(d);
+setTimeout(()=>d.remove(),1600);
+}
+}
+
+function start(){
+speechSynthesis.cancel();
+clearTimeout(timer);
+i=0;
+play();
+}
+
+function toggleVoice(){
+voiceOn=!voiceOn;
+speechSynthesis.cancel();
+}
+
+setTimeout(()=>{
+document.getElementById("logo").style.display="none";
+document.getElementById("app").style.display="block";
+},5000);
+</script>
+
+</body>
+</html>
