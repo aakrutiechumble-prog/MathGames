@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Addition - Grade 3 Math</title>
+<style>
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:linear-gradient(135deg,#fff7e8,#eaf6ff);
+    color:#243042;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  .splash{
+    position:fixed; inset:0; z-index:99;
+    display:flex; align-items:center; justify-content:center;
+    background:#fff7e8;
+  }
+  .splash img{max-width:220px; width:55%}
+  .bg span{
+    position:fixed; opacity:.25; z-index:0;
+    animation:float 7s infinite ease-in-out;
+    font-size:28px;
+  }
+  .bg span:nth-child(1){top:12%;left:8%}
+  .bg span:nth-child(2){top:24%;right:10%;animation-delay:1s}
+  .bg span:nth-child(3){bottom:16%;left:14%;animation-delay:2s}
+  .bg span:nth-child(4){bottom:22%;right:16%;animation-delay:3s}
+  @keyframes float{50%{transform:translateY(-14px) rotate(8deg)}}
+  .wrap{
+    position:relative; z-index:1;
+    max-width:780px; margin:0 auto; padding:22px;
+  }
+  .card{
+    background:rgba(255,255,255,.9);
+    border-radius:24px;
+    padding:24px;
+    box-shadow:0 10px 30px rgba(0,0,0,.12);
+    margin-top:25px;
+  }
+  h1,h2{margin-top:0;color:#17446b}
+  button{
+    border:none; border-radius:16px;
+    padding:14px 18px; margin:8px 0;
+    font-size:16px; cursor:pointer;
+    background:#2878bd; color:white;
+    width:100%;
+  }
+  button:hover{filter:brightness(.95)}
+  .option{
+    background:#fff;
+    color:#243042;
+    border:2px solid #d9e8f5;
+    text-align:left;
+  }
+  .option:disabled{cursor:not-allowed;opacity:.8}
+  .topbar{
+    display:flex; justify-content:space-between; gap:10px;
+    flex-wrap:wrap; font-weight:bold; margin-bottom:14px;
+  }
+  .pill{
+    background:#eef7ff;
+    padding:10px 14px;
+    border-radius:999px;
+  }
+  .feedback{
+    min-height:52px;
+    padding:12px;
+    border-radius:14px;
+    margin-top:12px;
+    font-weight:bold;
+  }
+  .correct{background:#e9f9ef;color:#176b37}
+  .wrong{background:#ffecec;color:#9e2323}
+  .hidden{display:none}
+  .cross{
+    position:fixed; inset:0; z-index:20;
+    display:none; align-items:center; justify-content:center;
+    font-size:110px; color:rgba(180,30,30,.35);
+    pointer-events:none;
+  }
+  .confetti{
+    position:fixed; top:-20px; font-size:22px;
+    animation:fall 1.3s linear forwards;
+    pointer-events:none; z-index:30;
+  }
+  @keyframes fall{
+    to{transform:translateY(100vh) rotate(280deg);opacity:0}
+  }
+</style>
+</head>
+<body>
+
+<div class="splash" id="splash">
+  <img src="assets/innovine-logo.png" alt="Innovine Logo">
+</div>
+
+<div class="bg">
+  <span>⭐</span><span>➕</span><span>🎈</span><span>✨</span>
+</div>
+
+<div class="cross" id="cross">✕</div>
+
+<div class="wrap">
+  <div class="card" id="intro">
+    <h1>Addition</h1>
+    <h2>Grade 3 Math | Chapter 5</h2>
+    <p>Read each situation carefully. Choose the best answer. You get one retry after a wrong answer.</p>
+    <button onclick="startGame()">Start Game</button>
+  </div>
+
+  <div class="card hidden" id="quiz">
+    <div class="topbar">
+      <div class="pill" id="progress">Question 1/10</div>
+      <div class="pill" id="score">Score: 0</div>
+      <div class="pill" id="timer">Time: 60</div>
+    </div>
+    <h2 id="question"></h2>
+    <div id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="hidden" id="nextBtn" onclick="nextQuestion()">Next</button>
+  </div>
+
+  <div class="card hidden" id="final">
+    <h1>Final Challenge ⭐</h1>
+    <p>You have solved addition situations, comparisons, and error checks. Ready to see your result?</p>
+    <button onclick="showResult()">Show Result</button>
+  </div>
+
+  <div class="card hidden" id="result">
+    <h1>Result</h1>
+    <h2 id="finalScore"></h2>
+    <p id="message"></p>
+    <button onclick="location.reload()">Play Again</button>
+  </div>
+</div>
+
+<audio id="correctSound" src="assets/correct.mp3"></audio>
+<audio id="wrongSound" src="assets/wrong.mp3"></audio>
+<audio id="clapSound" src="assets/clapping.mp3"></audio>
+
+<script>
+const questions = [
+  {
+    q:"Riya has 125 stickers. She wants 150 stickers. She gets 23 more. Does she reach her goal?",
+    o:["Yes, she has more than 150","Yes, she has exactly 150","No, she has less than 150","Cannot be found"],
+    a:2,
+    e:"125 + 23 = 148, so she has less than 150."
+  },
+  {
+    q:"A teacher has 132 books. She buys some more and now has 150 books. How many books did she buy?",
+    o:["12","18","20","28"],
+    a:1,
+    e:"150 - 132 = 18."
+  },
+  {
+    q:"A shop sold 210 notebooks in the morning. By afternoon, total sales became 255. How many notebooks were sold in the afternoon?",
+    o:["35","40","45","50"],
+    a:2,
+    e:"255 - 210 = 45."
+  },
+  {
+    q:"A shop sold 120 pens and 80 pencils. How many more pens than pencils were sold?",
+    o:["20","30","40","50"],
+    a:2,
+    e:"120 - 80 = 40."
+  },
+  {
+    q:"Class A collected 145 books and Class B collected 155 books. Which statement is correct?",
+    o:["Class A collected more books","Class B collected 10 more books","Both collected equal books","Class B collected 20 more books"],
+    a:1,
+    e:"155 is 10 more than 145."
+  },
+  {
+    q:"Aarav solved: 120 + 25 = 135. What mistake did he make?",
+    o:["Added ones incorrectly","Added tens incorrectly","Ignored tens completely","No mistake"],
+    a:1,
+    e:"120 + 25 = 145. He added the tens incorrectly."
+  },
+  {
+    q:"Meera solved: 145 + 32 = 167. Which is correct?",
+    o:["Ones are added wrongly","Tens are added wrongly","Carry is missing","Answer is correct"],
+    a:1,
+    e:"145 + 32 = 177. The tens were added wrongly."
+  },
+  {
+    q:"Rohan solved: 230 + 40 = 240. Why is this wrong?",
+    o:["Tens were not added correctly","Ones were added wrongly","Hundreds were added twice","No mistake"],
+    a:0,
+    e:"230 + 40 = 270. The tens were not added correctly."
+  },
+  {
+    q:"Assertion: 40 + 30 = 70. Reason: We add tens to tens.",
+    o:["Both are correct and reason explains assertion","Both are correct but reason does not explain","Assertion is correct, reason is wrong","Both are wrong"],
+    a:0,
+    e:"40 and 30 are tens. Adding tens to tens gives 70."
+  },
+  {
+    q:"Assertion: 125 + 25 = 150. Reason: Adding 25 increases the number by 25.",
+    o:["Both are correct and reason explains assertion","Both are correct but reason does not explain","Assertion is correct, reason is wrong","Both are wrong"],
+    a:0,
+    e:"125 increases by 25 to become 150."
+  }
+];
+
+let current = 0, score = 0, attempts = 0, timeLeft = 60, timer;
+
+setTimeout(()=>document.getElementById("splash").style.display="none",5000);
+
+function startGame(){
+  document.getElementById("intro").classList.add("hidden");
+  document.getElementById("quiz").classList.remove("hidden");
+  loadQuestion();
+}
+
+function loadQuestion(){
+  clearInterval(timer);
+  attempts = 0;
+  timeLeft = 60;
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("feedback").className = "feedback";
+  document.getElementById("nextBtn").classList.add("hidden");
+  document.getElementById("progress").textContent = `Question ${current+1}/10`;
+  document.getElementById("score").textContent = `Score: ${score}`;
+  document.getElementById("question").textContent = questions[current].q;
+
+  const optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+  questions[current].o.forEach((opt,i)=>{
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = opt;
+    btn.onclick = ()=>checkAnswer(i);
+    optionsDiv.appendChild(btn);
+  });
+
+  startTimer();
+}
+
+function startTimer(){
+  document.getElementById("timer").textContent = `Time: ${timeLeft}`;
+  timer = setInterval(()=>{
+    timeLeft--;
+    document.getElementById("timer").textContent = `Time: ${timeLeft}`;
+    if(timeLeft<=0){
+      clearInterval(timer);
+      lockOptions();
+      showWrong(`Time is up. Correct answer: ${questions[current].o[questions[current].a]}. ${questions[current].e}`);
+      document.getElementById("nextBtn").classList.remove("hidden");
+    }
+  },1000);
+}
+
+function checkAnswer(selected){
+  const q = questions[current];
+  if(selected === q.a){
+    clearInterval(timer);
+    score++;
+    document.getElementById("score").textContent = `Score: ${score}`;
+    document.getElementById("correctSound").play();
+    starConfetti();
+    lockOptions();
+    showCorrect("Correct! " + q.e);
+    document.getElementById("nextBtn").classList.remove("hidden");
+  }else{
+    attempts++;
+    document.getElementById("wrongSound").play();
+    showCross();
+    if(attempts === 1){
+      showWrong("Try once more. Check the numbers carefully.");
+    }else{
+      clearInterval(timer);
+      lockOptions();
+      showWrong(`Correct answer: ${q.o[q.a]}. ${q.e}`);
+      document.getElementById("nextBtn").classList.remove("hidden");
+    }
+  }
+}
+
+function showCorrect(text){
+  const f=document.getElementById("feedback");
+  f.textContent=text;
+  f.className="feedback correct";
+}
+
+function showWrong(text){
+  const f=document.getElementById("feedback");
+  f.textContent=text;
+  f.className="feedback wrong";
+}
+
+function lockOptions(){
+  document.querySelectorAll(".option").forEach(b=>b.disabled=true);
+}
+
+function nextQuestion(){
+  current++;
+  if(current < questions.length){
+    loadQuestion();
+  }else{
+    document.getElementById("quiz").classList.add("hidden");
+    document.getElementById("final").classList.remove("hidden");
+  }
+}
+
+function showResult(){
+  document.getElementById("final").classList.add("hidden");
+  document.getElementById("result").classList.remove("hidden");
+  document.getElementById("finalScore").textContent = `You scored ${score} out of ${questions.length}`;
+  document.getElementById("message").textContent =
+    score >= 8 ? "Excellent work! You are confident with addition." :
+    score >= 5 ? "Good effort. Revise addition with tens and ones once more." :
+    "Revise the concept and try again.";
+  if(score >= 8) document.getElementById("clapSound").play();
+}
+
+function starConfetti(){
+  for(let i=0;i<18;i++){
+    const s=document.createElement("div");
+    s.className="confetti";
+    s.textContent="⭐";
+    s.style.left=Math.random()*100+"vw";
+    s.style.animationDelay=Math.random()*0.3+"s";
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),1500);
+  }
+}
+
+function showCross(){
+  const c=document.getElementById("cross");
+  c.style.display="flex";
+  setTimeout(()=>c.style.display="none",450);
+}
+</script>
+</body>
+</html>
